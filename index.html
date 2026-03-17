@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -15,7 +16,6 @@
     --accent2: #ff6b35;
     --text: #f0ede6;
     --muted: #888;
-    --green: #4ade80;
     --blue: #60a5fa;
     --red: #f87171;
     --r0: #f5c842;
@@ -39,15 +39,73 @@
 
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
   .card-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
   label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-  input, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color .2s; }
-  input:focus, textarea:focus { border-color: var(--accent); }
-  textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
-  input::placeholder, textarea::placeholder { color: #555; }
+
+  /* Base input styles */
+  input[type=text] {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 10px 14px; outline: none; transition: border-color .2s;
+  }
+  input[type=text]:focus { border-color: var(--accent); }
+  input[type=text]::placeholder { color: #555; }
   .field { margin-bottom: 16px; }
 
+  /* Google autocomplete dropdown override */
+  .pac-container {
+    background: #1e1e1e !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    margin-top: 4px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,.5) !important;
+    font-family: 'DM Sans', sans-serif !important;
+    overflow: hidden;
+  }
+  .pac-item {
+    padding: 10px 14px !important;
+    border-top: 1px solid var(--border) !important;
+    color: var(--text) !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+    background: transparent !important;
+  }
+  .pac-item:first-child { border-top: none !important; }
+  .pac-item:hover, .pac-item-selected { background: var(--surface2) !important; }
+  .pac-item-query { color: var(--text) !important; font-size: 13px !important; }
+  .pac-matched { color: var(--accent) !important; font-weight: 600 !important; }
+  .pac-icon { display: none !important; }
+  .pac-logo:after { display: none !important; }
+
+  /* Address list */
+  .address-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .address-row { display: flex; align-items: center; gap: 8px; }
+  .address-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px;
+    color: var(--muted); flex-shrink: 0;
+  }
+  .address-row input[type=text] { flex: 1; }
+  .btn-remove {
+    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--muted); font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all .2s; flex-shrink: 0; padding: 0; line-height: 1;
+  }
+  .btn-remove:hover { background: rgba(248,113,113,.15); border-color: var(--red); color: var(--red); }
+
+  .btn-add {
+    width: 100%; background: transparent; border: 1.5px dashed var(--border);
+    border-radius: 10px; color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 10px; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); background: rgba(245,200,66,.04); }
+
+  /* Motoboys */
   .motoboys-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
   .motoboy-btn { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); transition: all .2s; }
   .motoboy-btn[data-id="0"].active { border-color: var(--r0); background: rgba(245,200,66,.08); color: var(--r0); }
@@ -66,6 +124,7 @@
 
   .error-msg { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; display: none; line-height: 1.5; }
 
+  /* Results */
   #results { display: none; margin-top: 32px; }
   .results-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; margin-bottom: 20px; }
   .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
@@ -89,9 +148,10 @@
   .route-actions { padding: 16px 20px; display: flex; gap: 10px; }
   .btn-maps { flex: 1; background: #1a73e8; color: white; border: none; border-radius: 10px; padding: 10px; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .2s; }
   .btn-maps:hover { opacity: 0.85; }
-  .btn-copy { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: background .2s; }
+  .btn-copy { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: background .2s; white-space: nowrap; }
   .btn-copy:hover { background: var(--border); }
 
+  /* Report */
   #report-section { display: none; margin-top: 24px; }
   .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
   .report-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 16px; color: var(--accent); }
@@ -106,8 +166,6 @@
   .report-table tr:last-child td { border-bottom: none; }
   .btn-export { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; margin-top: 16px; transition: background .2s; }
   .btn-export:hover { background: var(--border); }
-
-  .info-box { background: rgba(245,200,66,.07); border: 1px solid rgba(245,200,66,.2); border-radius: 10px; padding: 12px 16px; font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
 
   .c0{color:var(--r0)} .c1{color:var(--r1)} .c2{color:var(--r2)}
   .bg0{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.3)}
@@ -127,15 +185,16 @@
 
 <div class="container">
   <div class="page-title">Planejar entregas do dia</div>
-  <div class="page-sub">Cole os endereços, defina os motoboys e gere as rotas otimizadas.</div>
+  <div class="page-sub">Digite os endereços com sugestão automática e gere rotas otimizadas.</div>
 
   <div class="grid">
+    <!-- ESQUERDA -->
     <div>
       <div class="card">
         <div class="card-title"><span class="dot"></span>Ponto de partida</div>
         <div class="field">
           <label>Endereço base (de onde os motoboys saem)</label>
-          <input type="text" id="origin" placeholder="Ex: Av. Afonso Pena, 1000, Belo Horizonte, MG">
+          <input type="text" id="origin" placeholder="Digite o endereço...">
         </div>
       </div>
 
@@ -159,18 +218,16 @@
       </div>
     </div>
 
+    <!-- DIREITA -->
     <div>
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--blue)"></span>Endereços de entrega</div>
-        <div class="field">
-          <label>Um endereço por linha</label>
-          <textarea id="addresses" placeholder="Rua dos Carijós, 50, Belo Horizonte, MG&#10;Av. Brasil, 420, Belo Horizonte, MG&#10;Rua Espírito Santo, 800, Belo Horizonte, MG&#10;Rua da Bahia, 110, Belo Horizonte, MG"></textarea>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">As entregas serão distribuídas entre os motoboys ativos.</div>
+        <div class="address-list" id="address-list"></div>
+        <button class="btn-add" onclick="addAddressField()">+ Adicionar endereço</button>
+        <div style="font-size:12px;color:var(--muted);margin-top:10px;margin-bottom:4px">As entregas serão distribuídas entre os motoboys ativos.</div>
         <button class="btn-primary" onclick="calcularRotas()" id="btn-calcular">
           ⚡ Calcular rotas otimizadas
         </button>
-        <div class="info-box">💡 Para melhores resultados, inclua cidade e estado nos endereços. Ex: "Rua X, 100, Belo Horizonte, MG"</div>
         <div class="error-msg" id="error-msg"></div>
       </div>
     </div>
@@ -205,12 +262,90 @@ let activeMotoboys = [0];
 let routeData = [];
 let geocoder, distanceService;
 let mapsReady = false;
+let autocompletes = {};
+let addressCount = 0;
+// Store place data selected via autocomplete
+let placeData = {};
 
 window.initMaps = function() {
   geocoder = new google.maps.Geocoder();
   distanceService = new google.maps.DistanceMatrixService();
   mapsReady = true;
+
+  // Init autocomplete on origin
+  initAutocomplete(document.getElementById('origin'), 'origin');
+
+  // Add initial 4 address fields
+  for (let i = 0; i < 4; i++) addAddressField();
 };
+
+function initAutocomplete(input, key) {
+  const ac = new google.maps.places.Autocomplete(input, {
+    componentRestrictions: { country: 'br' },
+    fields: ['formatted_address', 'geometry', 'name']
+  });
+  ac.addListener('place_changed', () => {
+    const place = ac.getPlace();
+    if (place.geometry) {
+      placeData[key] = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+        formatted: place.formatted_address,
+        original: input.value
+      };
+    }
+  });
+  autocompletes[key] = ac;
+}
+
+function addAddressField() {
+  const list = document.getElementById('address-list');
+  const id = addressCount++;
+  const key = `addr_${id}`;
+
+  const row = document.createElement('div');
+  row.className = 'address-row';
+  row.dataset.key = key;
+
+  const num = document.createElement('div');
+  num.className = 'address-num';
+  num.textContent = list.children.length + 1;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Digite o endereço de entrega...';
+  input.id = `input_${key}`;
+
+  // Clear place data when user types manually
+  input.addEventListener('input', () => { delete placeData[key]; });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'btn-remove';
+  removeBtn.innerHTML = '×';
+  removeBtn.title = 'Remover';
+  removeBtn.onclick = () => {
+    row.remove();
+    delete placeData[key];
+    delete autocompletes[key];
+    renumberAddresses();
+  };
+
+  row.appendChild(num);
+  row.appendChild(input);
+  row.appendChild(removeBtn);
+  list.appendChild(row);
+
+  // Init autocomplete after DOM insert
+  setTimeout(() => initAutocomplete(input, key), 0);
+  renumberAddresses();
+}
+
+function renumberAddresses() {
+  const rows = document.querySelectorAll('#address-list .address-row');
+  rows.forEach((row, i) => {
+    row.querySelector('.address-num').textContent = i + 1;
+  });
+}
 
 function toggleMotoboy(id) {
   const btn = document.querySelector(`.motoboy-btn[data-id="${id}"]`);
@@ -236,9 +371,12 @@ function showError(msg) {
   setTimeout(() => el.style.display = 'none', 10000);
 }
 
-function geocodeAddress(address) {
+function geocodeAddress(address, key) {
+  // Use pre-fetched place data if available (from autocomplete selection)
+  if (placeData[key]) return Promise.resolve({ ...placeData[key], original: address });
+
   return new Promise((resolve) => {
-    geocoder.geocode({ address }, (results, status) => {
+    geocoder.geocode({ address, componentRestrictions: { country: 'BR' } }, (results, status) => {
       if (status === 'OK' && results.length > 0) {
         resolve({
           lat: results[0].geometry.location.lat(),
@@ -259,9 +397,7 @@ function getDistanceMatrix(origins, destinations) {
       origins: origins.map(o => new google.maps.LatLng(o.lat, o.lng)),
       destinations: destinations.map(d => new google.maps.LatLng(d.lat, d.lng)),
       travelMode: google.maps.TravelMode.DRIVING,
-    }, (response, status) => {
-      resolve(status === 'OK' ? response : null);
-    });
+    }, (response, status) => resolve(status === 'OK' ? response : null));
   });
 }
 
@@ -294,18 +430,20 @@ function formatDur(s) {
 }
 
 async function calcularRotas() {
-  if (!mapsReady) {
-    showError('⏳ Google Maps ainda carregando. Aguarde um segundo e tente novamente.');
-    return;
-  }
+  if (!mapsReady) { showError('⏳ Google Maps ainda carregando. Tente novamente em instantes.'); return; }
 
   const originText = document.getElementById('origin').value.trim();
-  const addressText = document.getElementById('addresses').value.trim();
   if (!originText) { showError('Informe o ponto de partida.'); return; }
-  if (!addressText) { showError('Cole pelo menos um endereço de entrega.'); return; }
 
-  const addresses = addressText.split('\n').map(a => a.trim()).filter(a => a.length > 3);
-  if (!addresses.length) { showError('Nenhum endereço válido encontrado.'); return; }
+  const rows = document.querySelectorAll('#address-list .address-row');
+  const addresses = [];
+  rows.forEach(row => {
+    const key = row.dataset.key;
+    const val = document.getElementById(`input_${key}`).value.trim();
+    if (val.length > 3) addresses.push({ text: val, key });
+  });
+
+  if (!addresses.length) { showError('Adicione pelo menos um endereço de entrega.'); return; }
 
   document.getElementById('loading').style.display = 'block';
   document.getElementById('results').style.display = 'none';
@@ -314,21 +452,15 @@ async function calcularRotas() {
   document.getElementById('error-msg').style.display = 'none';
 
   try {
-    const originCoord = await geocodeAddress(originText);
-    if (!originCoord) {
-      showError('❌ Ponto de partida não encontrado. Tente incluir cidade e estado. Ex: "Av. Afonso Pena, 1000, Belo Horizonte, MG"');
-      return;
-    }
+    const originCoord = await geocodeAddress(originText, 'origin');
+    if (!originCoord) { showError('❌ Ponto de partida não encontrado. Selecione uma sugestão da lista.'); return; }
 
     const geocoded = [];
     for (const addr of addresses) {
-      const g = await geocodeAddress(addr);
+      const g = await geocodeAddress(addr.text, addr.key);
       if (g) geocoded.push(g);
     }
-    if (!geocoded.length) {
-      showError('❌ Nenhum endereço foi encontrado. Verifique se estão completos com cidade e estado.');
-      return;
-    }
+    if (!geocoded.length) { showError('❌ Nenhum endereço encontrado. Selecione os endereços pelas sugestões.'); return; }
 
     const chunks = activeMotoboys.map(() => []);
     geocoded.forEach((addr, i) => chunks[i % activeMotoboys.length].push(addr));
@@ -370,7 +502,7 @@ async function calcularRotas() {
 
     renderResults();
   } catch(e) {
-    showError('Erro inesperado. Verifique os endereços e tente novamente.');
+    showError('Erro inesperado. Tente novamente.');
     console.error(e);
   } finally {
     document.getElementById('loading').style.display = 'none';
@@ -381,7 +513,6 @@ async function calcularRotas() {
 function renderResults() {
   const grid = document.getElementById('results-grid');
   grid.innerHTML = '';
-
   routeData.forEach(r => {
     const ci = activeMotoboys.indexOf(r.motoboyId);
     const card = document.createElement('div');
@@ -431,7 +562,6 @@ function renderReport() {
   const totDist = routeData.reduce((s,r)=>s+r.totalDist,0);
   const totDur  = routeData.reduce((s,r)=>s+r.totalDur,0);
   const totStop = routeData.reduce((s,r)=>s+r.stops.length,0);
-
   document.getElementById('report-stats').innerHTML = `
     <div class="report-stat"><div class="report-stat-val">${totStop}</div><div class="report-stat-label">Total de entregas</div></div>
     <div class="report-stat"><div class="report-stat-val">${formatDist(totDist)}</div><div class="report-stat-label">Distância total</div></div>
@@ -444,14 +574,12 @@ function renderReport() {
       <td>${formatDist(r.totalDist)}</td>
       <td>${formatDur(r.totalDur)}</td>
     </tr>`).join('');
-
   document.getElementById('report-section').style.display = 'block';
 }
 
 function exportarRelatorio() {
   const now = new Date().toLocaleString('pt-BR');
-  let txt = `RELATÓRIO DE ROTAS — RotaFácil\nGerado em: ${now}\n\n`;
-  txt += `=== RESUMO ===\n`;
+  let txt = `RELATÓRIO DE ROTAS — RotaFácil\nGerado em: ${now}\n\n=== RESUMO ===\n`;
   txt += `Total de entregas: ${routeData.reduce((s,r)=>s+r.stops.length,0)}\n`;
   txt += `Distância total: ${formatDist(routeData.reduce((s,r)=>s+r.totalDist,0))}\n`;
   txt += `Tempo estimado total: ${formatDur(routeData.reduce((s,r)=>s+r.totalDur,0))}\n\n`;
@@ -469,6 +597,6 @@ function exportarRelatorio() {
 }
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg&callback=initMaps&libraries=geometry" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg&callback=initMaps&libraries=places,geometry" async defer></script>
 </body>
 </html>
