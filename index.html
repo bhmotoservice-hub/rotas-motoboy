@@ -1,602 +1,420 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RotaFácil — Otimizador de Entregas</title>
+<title>Moto Service BH</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0f0f;
-    --surface: #181818;
-    --surface2: #222222;
-    --border: #2a2a2a;
-    --accent: #f5c842;
-    --accent2: #ff6b35;
-    --text: #f0ede6;
-    --muted: #888;
-    --blue: #60a5fa;
-    --red: #f87171;
-    --r0: #f5c842;
-    --r1: #ff6b35;
-    --r2: #a78bfa;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; min-height: 100vh; }
-
-  header { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(15,15,15,0.95); backdrop-filter: blur(8px); z-index: 100; }
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
-  .logo span { color: var(--accent); }
-  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
-
-  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
-  .page-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 28px; margin-bottom: 6px; }
-  .page-sub { color: var(--muted); margin-bottom: 32px; font-size: 14px; }
-
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  @media(max-width:700px){ .grid { grid-template-columns: 1fr; } }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-  .card-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-
-  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-
-  /* Base input styles */
-  input[type=text] {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 14px; padding: 10px 14px; outline: none; transition: border-color .2s;
-  }
-  input[type=text]:focus { border-color: var(--accent); }
-  input[type=text]::placeholder { color: #555; }
-  .field { margin-bottom: 16px; }
-
-  /* Google autocomplete dropdown override */
-  .pac-container {
-    background: #1e1e1e !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 10px !important;
-    margin-top: 4px !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,.5) !important;
-    font-family: 'DM Sans', sans-serif !important;
-    overflow: hidden;
-  }
-  .pac-item {
-    padding: 10px 14px !important;
-    border-top: 1px solid var(--border) !important;
-    color: var(--text) !important;
-    font-size: 13px !important;
-    cursor: pointer !important;
-    background: transparent !important;
-  }
-  .pac-item:first-child { border-top: none !important; }
-  .pac-item:hover, .pac-item-selected { background: var(--surface2) !important; }
-  .pac-item-query { color: var(--text) !important; font-size: 13px !important; }
-  .pac-matched { color: var(--accent) !important; font-weight: 600 !important; }
-  .pac-icon { display: none !important; }
-  .pac-logo:after { display: none !important; }
-
-  /* Address list */
-  .address-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-  .address-row { display: flex; align-items: center; gap: 8px; }
-  .address-num {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: var(--surface2); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px;
-    color: var(--muted); flex-shrink: 0;
-  }
-  .address-row input[type=text] { flex: 1; }
-  .btn-remove {
-    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--surface2); color: var(--muted); font-size: 16px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all .2s; flex-shrink: 0; padding: 0; line-height: 1;
-  }
-  .btn-remove:hover { background: rgba(248,113,113,.15); border-color: var(--red); color: var(--red); }
-
-  .btn-add {
-    width: 100%; background: transparent; border: 1.5px dashed var(--border);
-    border-radius: 10px; color: var(--muted); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; padding: 10px; cursor: pointer; transition: all .2s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .btn-add:hover { border-color: var(--accent); color: var(--accent); background: rgba(245,200,66,.04); }
-
-  /* Motoboys */
-  .motoboys-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .motoboy-btn { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); transition: all .2s; }
-  .motoboy-btn[data-id="0"].active { border-color: var(--r0); background: rgba(245,200,66,.08); color: var(--r0); }
-  .motoboy-btn[data-id="1"].active { border-color: var(--r1); background: rgba(255,107,53,.08); color: var(--r1); }
-  .motoboy-btn[data-id="2"].active { border-color: var(--r2); background: rgba(167,139,250,.08); color: var(--r2); }
-  .motoboy-name-input { background: transparent; border: none; color: inherit; font-family: 'DM Sans', sans-serif; font-size: 13px; width: 90px; outline: none; padding: 0; cursor: text; }
-
-  .btn-primary { width: 100%; background: var(--accent); color: #0f0f0f; border: none; border-radius: 12px; padding: 14px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 8px; transition: opacity .2s, transform .1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-primary:active { transform: scale(0.99); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .loading { display: none; text-align: center; padding: 40px; }
-  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .error-msg { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; display: none; line-height: 1.5; }
-
-  /* Results */
-  #results { display: none; margin-top: 32px; }
-  .results-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; margin-bottom: 20px; }
-  .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-
-  .route-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-  .route-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-  .route-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; }
-  .route-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-  .route-stats { display: flex; gap: 16px; padding: 14px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); }
-  .stat { flex: 1; }
-  .stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
-  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  .stops-list { padding: 16px 20px; }
-  .stop-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .stop-item:last-child { border-bottom: none; }
-  .stop-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
-  .stop-addr { font-size: 13px; line-height: 1.4; }
-  .stop-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  .route-actions { padding: 16px 20px; display: flex; gap: 10px; }
-  .btn-maps { flex: 1; background: #1a73e8; color: white; border: none; border-radius: 10px; padding: 10px; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .2s; }
-  .btn-maps:hover { opacity: 0.85; }
-  .btn-copy { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: background .2s; white-space: nowrap; }
-  .btn-copy:hover { background: var(--border); }
-
-  /* Report */
-  #report-section { display: none; margin-top: 24px; }
-  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-  .report-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 16px; color: var(--accent); }
-  .report-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
-  @media(max-width:500px){ .report-grid { grid-template-columns: 1fr 1fr; } }
-  .report-stat { background: var(--surface2); border-radius: 12px; padding: 14px; }
-  .report-stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: var(--accent); }
-  .report-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .report-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .report-table th { text-align: left; padding: 8px 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); }
-  .report-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  .report-table tr:last-child td { border-bottom: none; }
-  .btn-export { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; margin-top: 16px; transition: background .2s; }
-  .btn-export:hover { background: var(--border); }
-
-  .c0{color:var(--r0)} .c1{color:var(--r1)} .c2{color:var(--r2)}
-  .bg0{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.3)}
-  .bg1{background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.3)}
-  .bg2{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3)}
-  .num0{background:rgba(245,200,66,.2);color:var(--r0)}
-  .num1{background:rgba(255,107,53,.2);color:var(--r1)}
-  .num2{background:rgba(167,139,250,.2);color:var(--r2)}
+:root{--bg:#0f0f0f;--sf:#181818;--sf2:#222;--bd:#2a2a2a;--ac:#f5c842;--ac2:#ff6b35;--tx:#f0ede6;--mt:#888;--bl:#60a5fa;--rd:#f87171;--gn:#4ade80}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:rgba(15,15,15,.97);backdrop-filter:blur(8px);z-index:200;flex-wrap:wrap;gap:10px}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:19px}.logo span{color:var(--ac)}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nb{background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--mt);cursor:pointer;transition:all .2s}
+.nb.active{background:var(--ac);color:#0f0f0f;border-color:var(--ac);font-weight:500}
+.nb:hover:not(.active){border-color:var(--ac);color:var(--ac)}
+.pg{display:none;max-width:1100px;margin:0 auto;padding:28px 20px 80px}.pg.active{display:block}
+.pt{font-family:'Syne',sans-serif;font-weight:700;font-size:24px;margin-bottom:5px}
+.ps{color:var(--mt);margin-bottom:22px;font-size:13px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:700px){.g2{grid-template-columns:1fr}}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:16px}
+.ct{font-family:'Syne',sans-serif;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--mt);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.fi{margin-bottom:12px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:550px){.fr{grid-template-columns:1fr}}
+label{display:block;font-size:12px;color:var(--mt);margin-bottom:4px}
+input,select,textarea{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 13px;outline:none;transition:border-color .2s;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+input::placeholder{color:#555}
+select option{background:#1e1e1e}
+.pac-container{background:#1e1e1e!important;border:1px solid var(--bd)!important;border-radius:10px!important;margin-top:4px!important;box-shadow:0 8px 24px rgba(0,0,0,.5)!important;font-family:'DM Sans',sans-serif!important;overflow:hidden;z-index:9999!important}
+.pac-item{padding:9px 13px!important;border-top:1px solid var(--bd)!important;color:var(--tx)!important;font-size:13px!important;cursor:pointer!important;background:transparent!important}
+.pac-item:first-child{border-top:none!important}
+.pac-item:hover,.pac-item-selected{background:var(--sf2)!important}
+.pac-item-query{color:var(--tx)!important;font-size:13px!important}
+.pac-matched{color:var(--ac)!important;font-weight:600!important}
+.pac-icon,.pac-logo:after{display:none!important}
+.btn{border:none;border-radius:10px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.bp{background:var(--ac);color:#0f0f0f;font-weight:500}.bp:hover{opacity:.9}
+.bs{background:var(--sf2);border:1px solid var(--bd);color:var(--tx)}.bs:hover{border-color:var(--ac);color:var(--ac)}
+.bfull{width:100%;justify-content:center;padding:13px;font-size:14px;font-family:'Syne',sans-serif;font-weight:700}
+.ar{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.an{width:24px;height:24px;border-radius:50%;background:var(--sf2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--mt);flex-shrink:0}
+.ar input{flex:1}
+.brm{width:28px;height:28px;border-radius:7px;border:1px solid var(--bd);background:var(--sf2);color:var(--mt);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;padding:0;line-height:1}
+.brm:hover{background:rgba(248,113,113,.15);border-color:var(--rd);color:var(--rd)}
+.badd{width:100%;background:transparent;border:1.5px dashed var(--bd);border-radius:10px;color:var(--mt);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:3px}
+.badd:hover{border-color:var(--ac);color:var(--ac)}
+.mbs{display:flex;gap:8px;flex-wrap:wrap}
+.mbo{display:flex;align-items:center;gap:7px;background:var(--sf2);border:1.5px solid var(--bd);border-radius:10px;padding:9px 14px;cursor:pointer;font-size:13px;color:var(--mt);transition:all .2s;user-select:none}
+.mbo.active{border-color:var(--ac);background:rgba(245,200,66,.08);color:var(--ac)}
+.pbox{background:var(--sf2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-top:14px}
+.prow{display:flex;justify-content:space-between;font-size:13px;color:var(--mt);padding:3px 0}
+.ptot{display:flex;justify-content:space-between;font-family:'Syne',sans-serif;font-weight:700;font-size:19px;color:var(--ac);padding-top:9px;margin-top:5px;border-top:1px solid var(--bd)}
+.msg{border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px;display:none;line-height:1.5}
+.merr{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--rd)}
+.mok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--gn)}
+.ld{display:none;text-align:center;padding:24px}
+.sp{width:30px;height:30px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.osl{display:flex;flex-direction:column;gap:10px}
+.osc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.osn{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:var(--ac);min-width:70px}
+.osi{flex:1;min-width:140px}
+.oscl{font-weight:500;font-size:14px}
+.osm{font-size:12px;color:var(--mt);margin-top:2px}
+.osp{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--gn);min-width:70px;text-align:right}
+.ost{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.sp1{background:rgba(245,200,66,.15);color:#f5c842}
+.sp2{background:rgba(74,222,128,.15);color:var(--gn)}
+.osa{display:flex;gap:7px;flex-wrap:wrap}
+.clc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.cla{width:38px;height:38px;border-radius:50%;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--ac);flex-shrink:0}
+.clni{flex:1}.clnm{font-weight:500;font-size:14px}.clmt{font-size:12px;color:var(--mt);margin-top:2px}
+.sr{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:700px){.sr{grid-template-columns:1fr 1fr}}
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px}
+.sv{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--ac)}
+.sl{font-size:12px;color:var(--mt);margin-top:3px}
+.csw{position:relative}
+.csd{position:absolute;top:100%;left:0;right:0;background:#1e1e1e;border:1px solid var(--bd);border-radius:10px;margin-top:3px;z-index:100;display:none;max-height:180px;overflow-y:auto}
+.cso{padding:9px 13px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--bd);transition:background .15s}
+.cso:last-child{border-bottom:none}.cso:hover{background:var(--sf2)}
+.con{font-weight:500}.com{font-size:11px;color:var(--mt);margin-top:1px}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.mo.open{display:flex}
+.md{background:var(--sf);border:1px solid var(--bd);border-radius:18px;width:100%;max-width:660px;max-height:92vh;overflow-y:auto}
+.mh{padding:18px 22px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sf);z-index:10;border-radius:18px 18px 0 0}
+.mt2{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.mc{background:var(--sf2);border:1px solid var(--bd);color:var(--mt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mc:hover{color:var(--tx)}
+.mb2{padding:22px}
+.ma{padding:14px 22px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}
+.doc{background:white;color:#111;border-radius:10px;padding:28px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #111}
+.dco{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#111}.dco span{color:#e5a800}
+.dbg{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;background:#111;color:white;padding:4px 13px;border-radius:20px}
+.dn{font-size:11px;color:#666;margin-top:3px;text-align:right}
+.ds{margin-bottom:18px}
+.dst{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:7px}
+.dr{display:flex;gap:7px;margin-bottom:3px}
+.dl{font-weight:500;min-width:95px;color:#444;font-size:13px}
+.dv{color:#111;font-size:13px}
+.dsp{background:#f8f8f8;border-radius:8px;padding:10px}
+.dsi{display:flex;gap:9px;padding:5px 0;border-bottom:1px solid #eee}
+.dsi:last-child{border-bottom:none}
+.dsn{width:20px;height:20px;border-radius:50%;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0;margin-top:1px}
+.dpt{width:100%;border-collapse:collapse;font-size:13px}
+.dpt td{padding:5px 0;border-bottom:1px solid #eee}
+.dpt td:last-child{text-align:right;font-weight:500}
+.dtot{display:flex;justify-content:space-between;font-family:'Syne',sans-serif;font-weight:800;font-size:17px;margin-top:10px;padding-top:10px;border-top:2px solid #111}
+.dft{margin-top:20px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center}
+.dsg{display:flex;justify-content:space-between;margin-top:28px;gap:18px}
+.dsl{flex:1;text-align:center}
+.dsl div{border-top:1px solid #999;padding-top:7px;font-size:11px;color:#666}
+@media print{body *{display:none!important}.doc,.doc *{display:revert!important}.doc{border-radius:0;padding:18px}}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo">Rota<span>Fácil</span></div>
-  <div class="badge">🏍️ Otimizador de Entregas</div>
+  <div class="logo">Moto Service <span>BH</span></div>
+  <div class="nav">
+    <button class="nb active" onclick="showPage('nova')">📋 Nova OS</button>
+    <button class="nb" onclick="showPage('ordens')">📦 Ordens</button>
+    <button class="nb" onclick="showPage('clientes')">👥 Clientes</button>
+    <button class="nb" onclick="showPage('dash')">📊 Dashboard</button>
+  </div>
 </header>
 
-<div class="container">
-  <div class="page-title">Planejar entregas do dia</div>
-  <div class="page-sub">Digite os endereços com sugestão automática e gere rotas otimizadas.</div>
-
-  <div class="grid">
-    <!-- ESQUERDA -->
+<div class="pg active" id="pg-nova">
+  <div class="pt">Nova Ordem de Serviço</div>
+  <div class="ps">Preencha os dados para gerar a OS e o orçamento.</div>
+  <div class="g2">
     <div>
       <div class="card">
-        <div class="card-title"><span class="dot"></span>Ponto de partida</div>
-        <div class="field">
-          <label>Endereço base (de onde os motoboys saem)</label>
-          <input type="text" id="origin" placeholder="Digite o endereço...">
+        <div class="ct"><span class="dot"></span>Dados do cliente</div>
+        <div class="fi"><label>Buscar cliente cadastrado</label>
+          <div class="csw"><input type="text" id="csearch" placeholder="Digite nome ou CNPJ..." autocomplete="off" oninput="searchCli(this.value)"><div class="csd" id="csd"></div></div>
         </div>
+        <div class="fr"><div><label>Nome / Razão Social *</label><input type="text" id="cn" placeholder="Nome ou empresa"></div><div><label>CPF / CNPJ</label><input type="text" id="cd" placeholder="Opcional"></div></div>
+        <div class="fr"><div><label>Telefone</label><input type="tel" id="cp" placeholder="(31) 99999-9999"></div><div><label>E-mail</label><input type="email" id="ce" placeholder="email@exemplo.com"></div></div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn bs" onclick="saveCli()" style="font-size:12px;padding:6px 13px">💾 Salvar cliente</button></div>
       </div>
-
-      <div class="card" style="margin-top:20px">
-        <div class="card-title"><span class="dot" style="background:var(--accent2)"></span>Motoboys hoje</div>
-        <div class="motoboys-row">
-          <button class="motoboy-btn active" data-id="0" onclick="toggleMotoboy(0)">
-            <span>🏍️</span>
-            <input class="motoboy-name-input" value="Motoboy 1" onclick="event.stopPropagation()">
-          </button>
-          <button class="motoboy-btn" data-id="1" onclick="toggleMotoboy(1)">
-            <span>🏍️</span>
-            <input class="motoboy-name-input" value="Motoboy 2" onclick="event.stopPropagation()">
-          </button>
-          <button class="motoboy-btn" data-id="2" onclick="toggleMotoboy(2)">
-            <span>🏍️</span>
-            <input class="motoboy-name-input" value="Motoboy 3" onclick="event.stopPropagation()">
-          </button>
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--bl)"></span>Endereço de coleta</div>
+        <div class="fi"><input type="text" id="pu" placeholder="Digite o endereço de coleta..."></div>
+        <div class="fi"><label>Observação (opcional)</label><input type="text" id="puobs" placeholder="Ex: Portaria B, sala 201..."></div>
+      </div>
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--ac2)"></span>Motoboy responsável</div>
+        <div class="mbs" id="mbs">
+          <div class="mbo active" data-id="0" onclick="selMB(0)">🏍️ Motoboy 1</div>
+          <div class="mbo" data-id="1" onclick="selMB(1)">🏍️ Motoboy 2</div>
+          <div class="mbo" data-id="2" onclick="selMB(2)">🏍️ Motoboy 3</div>
         </div>
-        <div style="font-size:12px;color:var(--muted)">Clique para ativar/desativar. Edite o nome diretamente.</div>
       </div>
     </div>
-
-    <!-- DIREITA -->
     <div>
       <div class="card">
-        <div class="card-title"><span class="dot" style="background:var(--blue)"></span>Endereços de entrega</div>
-        <div class="address-list" id="address-list"></div>
-        <button class="btn-add" onclick="addAddressField()">+ Adicionar endereço</button>
-        <div style="font-size:12px;color:var(--muted);margin-top:10px;margin-bottom:4px">As entregas serão distribuídas entre os motoboys ativos.</div>
-        <button class="btn-primary" onclick="calcularRotas()" id="btn-calcular">
-          ⚡ Calcular rotas otimizadas
-        </button>
-        <div class="error-msg" id="error-msg"></div>
+        <div class="ct"><span class="dot" style="background:var(--ac2)"></span>Endereços de entrega</div>
+        <div id="dlist"></div>
+        <button class="badd" onclick="addDel()">+ Adicionar endereço de entrega</button>
       </div>
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--gn)"></span>Cálculo do serviço</div>
+        <div class="fi"><label>Distância total (km)</label>
+          <input type="number" id="kmi" placeholder="Ex: 15" min="0" step="0.1" oninput="calcP()">
+          <div style="font-size:11px;color:var(--mt);margin-top:3px">Calculado automaticamente ao clicar em "Calcular rota" ou informe manualmente.</div>
+        </div>
+        <div class="pbox">
+          <div class="prow"><span>Mínimo (até 10km + coleta/entrega)</span><span>R$ 30,00</span></div>
+          <div class="prow" id="pkm" style="display:none"><span id="pkml"></span><span id="pkmv"></span></div>
+          <div class="prow" id="pst" style="display:none"><span id="pstl"></span><span id="pstv"></span></div>
+          <div class="ptot"><span>Total</span><span id="ptot">R$ 30,00</span></div>
+        </div>
+        <div class="ld" id="ldr"><div class="sp"></div><div style="color:var(--mt);font-size:13px">Calculando rota...</div></div>
+        <button class="btn bs" style="width:100%;justify-content:center;margin-top:10px" onclick="calcRoute()">🗺️ Calcular rota e distância</button>
+        <div class="msg merr" id="errmsg"></div>
+        <div class="msg mok" id="okmsg"></div>
+      </div>
+      <button class="btn bp bfull" onclick="gerarOS()">⚡ Gerar Ordem de Serviço</button>
     </div>
   </div>
+</div>
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <div style="color:var(--muted);font-size:14px">Calculando rotas com Google Maps...</div>
+<div class="pg" id="pg-ordens">
+  <div class="pt">Ordens de Serviço</div><div class="ps">Histórico de todas as ordens geradas.</div>
+  <div id="osc"><div style="text-align:center;padding:60px;color:var(--mt)">Nenhuma OS gerada ainda.</div></div>
+</div>
+
+<div class="pg" id="pg-clientes">
+  <div class="pt">Clientes</div><div class="ps">Gerencie sua base de clientes.</div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn bp" onclick="showPage('nova')">+ Nova OS</button></div>
+  <div id="clc"><div style="text-align:center;padding:60px;color:var(--mt)">Nenhum cliente cadastrado ainda.</div></div>
+</div>
+
+<div class="pg" id="pg-dash">
+  <div class="pt">Dashboard</div><div class="ps">Resumo da operação.</div>
+  <div class="sr">
+    <div class="sc"><div class="sv" id="sos">0</div><div class="sl">Ordens geradas</div></div>
+    <div class="sc"><div class="sv" id="scli">0</div><div class="sl">Clientes</div></div>
+    <div class="sc"><div class="sv" id="srev">R$ 0</div><div class="sl">Faturamento total</div></div>
+    <div class="sc"><div class="sv" id="skm">0 km</div><div class="sl">KM rodados</div></div>
   </div>
+  <div class="card"><div class="ct"><span class="dot"></span>Últimas ordens</div><div id="ros"></div></div>
+</div>
 
-  <div id="results">
-    <div class="results-title">🗺️ Rotas do dia</div>
-    <div class="results-grid" id="results-grid"></div>
-  </div>
-
-  <div id="report-section">
-    <div class="report-card">
-      <div class="report-title">📊 Relatório da operação</div>
-      <div class="report-grid" id="report-stats"></div>
-      <table class="report-table">
-        <thead><tr><th>Motoboy</th><th>Entregas</th><th>Distância</th><th>Tempo est.</th></tr></thead>
-        <tbody id="report-tbody"></tbody>
-      </table>
-      <button class="btn-export" onclick="exportarRelatorio()">⬇️ Exportar relatório (.txt)</button>
+<div class="mo" id="modal">
+  <div class="md">
+    <div class="mh"><div class="mt2" id="mtitle">Ordem de Serviço</div><button class="mc" onclick="closeModal()">×</button></div>
+    <div class="mb2"><div class="doc" id="docprev"></div></div>
+    <div class="ma">
+      <button class="btn bs" onclick="toggleDoc()">🔄 Alternar OS / Orçamento</button>
+      <button class="btn bp" onclick="window.print()">🖨️ Imprimir</button>
     </div>
   </div>
 </div>
 
 <script>
-const GOOGLE_API_KEY = 'AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg';
-let activeMotoboys = [0];
-let routeData = [];
-let geocoder, distanceService;
-let mapsReady = false;
-let autocompletes = {};
-let addressCount = 0;
-// Store place data selected via autocomplete
-let placeData = {};
+const APIKEY='AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg';
+let gc,ds,mr=false,dc=0,dp={},pp=null,smb=0,cos=null,sb=false;
+const MBS=['Motoboy 1','Motoboy 2','Motoboy 3'];
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch{return d}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v))}
+let clients=ld('mc',[]),orders=ld('mo',[]),ctr=ld('mn',1);
 
-window.initMaps = function() {
-  geocoder = new google.maps.Geocoder();
-  distanceService = new google.maps.DistanceMatrixService();
-  mapsReady = true;
-
-  // Init autocomplete on origin
-  initAutocomplete(document.getElementById('origin'), 'origin');
-
-  // Add initial 4 address fields
-  for (let i = 0; i < 4; i++) addAddressField();
+window.initMaps=function(){
+  gc=new google.maps.Geocoder();
+  ds=new google.maps.DistanceMatrixService();
+  mr=true;
+  const pi=document.getElementById('pu');
+  const pa=new google.maps.places.Autocomplete(pi,{componentRestrictions:{country:'br'},fields:['formatted_address','geometry']});
+  pa.addListener('place_changed',()=>{const p=pa.getPlace();if(p.geometry)pp={lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),formatted:p.formatted_address,original:pi.value};});
+  pi.addEventListener('input',()=>{pp=null;});
+  addDel();addDel();
+  renderOrders();renderClients();updDash();
 };
 
-function initAutocomplete(input, key) {
-  const ac = new google.maps.places.Autocomplete(input, {
-    componentRestrictions: { country: 'br' },
-    fields: ['formatted_address', 'geometry', 'name']
-  });
-  ac.addListener('place_changed', () => {
-    const place = ac.getPlace();
-    if (place.geometry) {
-      placeData[key] = {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-        formatted: place.formatted_address,
-        original: input.value
-      };
-    }
-  });
-  autocompletes[key] = ac;
+function showPage(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  const idx=['nova','ordens','clientes','dash'].indexOf(id);
+  document.querySelectorAll('.nb')[idx].classList.add('active');
+  if(id==='dash')updDash();
+  if(id==='ordens')renderOrders();
+  if(id==='clientes')renderClients();
 }
 
-function addAddressField() {
-  const list = document.getElementById('address-list');
-  const id = addressCount++;
-  const key = `addr_${id}`;
+function selMB(id){smb=id;document.querySelectorAll('.mbo').forEach(o=>o.classList.remove('active'));document.querySelector('.mbo[data-id="'+id+'"]').classList.add('active');}
 
-  const row = document.createElement('div');
-  row.className = 'address-row';
-  row.dataset.key = key;
-
-  const num = document.createElement('div');
-  num.className = 'address-num';
-  num.textContent = list.children.length + 1;
-
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.placeholder = 'Digite o endereço de entrega...';
-  input.id = `input_${key}`;
-
-  // Clear place data when user types manually
-  input.addEventListener('input', () => { delete placeData[key]; });
-
-  const removeBtn = document.createElement('button');
-  removeBtn.className = 'btn-remove';
-  removeBtn.innerHTML = '×';
-  removeBtn.title = 'Remover';
-  removeBtn.onclick = () => {
-    row.remove();
-    delete placeData[key];
-    delete autocompletes[key];
-    renumberAddresses();
-  };
-
-  row.appendChild(num);
-  row.appendChild(input);
-  row.appendChild(removeBtn);
+function addDel(){
+  const list=document.getElementById('dlist');
+  const id=dc++;const key='d'+id;
+  const row=document.createElement('div');row.className='ar';row.dataset.key=key;
+  const num=document.createElement('div');num.className='an';num.textContent=list.children.length+1;
+  const inp=document.createElement('input');inp.type='text';inp.placeholder='Endereço de entrega...';inp.id='di'+key;inp.style.flex='1';
+  inp.addEventListener('input',()=>{delete dp[key];});
+  const rm=document.createElement('button');rm.className='brm';rm.innerHTML='×';
+  rm.onclick=()=>{row.remove();delete dp[key];renum();calcP();};
+  row.appendChild(num);row.appendChild(inp);row.appendChild(rm);
   list.appendChild(row);
-
-  // Init autocomplete after DOM insert
-  setTimeout(() => initAutocomplete(input, key), 0);
-  renumberAddresses();
+  setTimeout(()=>{
+    const ac=new google.maps.places.Autocomplete(inp,{componentRestrictions:{country:'br'},fields:['formatted_address','geometry']});
+    ac.addListener('place_changed',()=>{const p=ac.getPlace();if(p.geometry)dp[key]={lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),formatted:p.formatted_address,original:inp.value};});
+  },0);
+  renum();calcP();
 }
 
-function renumberAddresses() {
-  const rows = document.querySelectorAll('#address-list .address-row');
-  rows.forEach((row, i) => {
-    row.querySelector('.address-num').textContent = i + 1;
-  });
+function renum(){document.querySelectorAll('#dlist .ar').forEach((r,i)=>r.querySelector('.an').textContent=i+1);}
+
+function getDels(){
+  return Array.from(document.querySelectorAll('#dlist .ar')).map(r=>{
+    const k=r.dataset.key,v=document.getElementById('di'+k).value.trim();
+    return v.length>3?{text:v,key:k,place:dp[k]||null}:null;
+  }).filter(Boolean);
 }
 
-function toggleMotoboy(id) {
-  const btn = document.querySelector(`.motoboy-btn[data-id="${id}"]`);
-  if (activeMotoboys.includes(id)) {
-    if (activeMotoboys.length === 1) return;
-    activeMotoboys = activeMotoboys.filter(x => x !== id);
-    btn.classList.remove('active');
-  } else {
-    activeMotoboys.push(id);
-    btn.classList.add('active');
-  }
+function searchCli(q){
+  const dd=document.getElementById('csd');
+  if(!q.trim()){dd.style.display='none';return;}
+  const res=clients.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||(c.doc&&c.doc.includes(q)));
+  if(!res.length){dd.style.display='none';return;}
+  dd.innerHTML=res.map(c=>`<div class="cso" onclick="fillCli(${clients.indexOf(c)})"><div class="con">${c.name}</div><div class="com">${[c.doc,c.phone].filter(Boolean).join(' · ')||'Sem dados'}</div></div>`).join('');
+  dd.style.display='block';
 }
 
-function getMotoyboyName(id) {
-  const input = document.querySelector(`.motoboy-btn[data-id="${id}"] .motoboy-name-input`);
-  return input ? input.value.trim() || `Motoboy ${id+1}` : `Motoboy ${id+1}`;
+document.addEventListener('click',e=>{if(!e.target.closest('.csw'))document.getElementById('csd').style.display='none';});
+
+function fillCli(i){
+  const c=clients[i];
+  document.getElementById('cn').value=c.name||'';
+  document.getElementById('cd').value=c.doc||'';
+  document.getElementById('cp').value=c.phone||'';
+  document.getElementById('ce').value=c.email||'';
+  document.getElementById('csearch').value=c.name||'';
+  document.getElementById('csd').style.display='none';
 }
 
-function showError(msg) {
-  const el = document.getElementById('error-msg');
-  el.innerHTML = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 10000);
+function saveCli(){
+  const name=document.getElementById('cn').value.trim();
+  if(!name){showMsg('err','Informe o nome do cliente.');return;}
+  const ei=clients.findIndex(c=>c.name.toLowerCase()===name.toLowerCase());
+  const cl={id:ei>=0?clients[ei].id:Date.now(),name,doc:document.getElementById('cd').value.trim(),phone:document.getElementById('cp').value.trim(),email:document.getElementById('ce').value.trim()};
+  if(ei>=0)clients[ei]=cl;else clients.push(cl);
+  sv('mc',clients);showMsg('ok','Cliente "'+name+'" salvo!');renderClients();
 }
 
-function geocodeAddress(address, key) {
-  // Use pre-fetched place data if available (from autocomplete selection)
-  if (placeData[key]) return Promise.resolve({ ...placeData[key], original: address });
-
-  return new Promise((resolve) => {
-    geocoder.geocode({ address, componentRestrictions: { country: 'BR' } }, (results, status) => {
-      if (status === 'OK' && results.length > 0) {
-        resolve({
-          lat: results[0].geometry.location.lat(),
-          lng: results[0].geometry.location.lng(),
-          formatted: results[0].formatted_address,
-          original: address
-        });
-      } else {
-        resolve(null);
-      }
-    });
-  });
+function renderClients(){
+  const c=document.getElementById('clc');
+  if(!clients.length){c.innerHTML='<div style="text-align:center;padding:60px;color:var(--mt)">Nenhum cliente cadastrado ainda.</div>';return;}
+  c.innerHTML=clients.map((cl,i)=>`<div class="clc"><div class="cla">${cl.name.charAt(0).toUpperCase()}</div><div class="clni"><div class="clnm">${cl.name}</div><div class="clmt">${[cl.doc,cl.phone,cl.email].filter(Boolean).join(' · ')||'Sem dados'}</div></div><div style="display:flex;gap:7px"><button class="btn bs" style="font-size:12px;padding:6px 11px" onclick="fillCli(${i});showPage('nova')">Nova OS</button><button class="btn" style="font-size:12px;padding:6px 11px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--rd)" onclick="delCli(${i})">Remover</button></div></div>`).join('');
 }
 
-function getDistanceMatrix(origins, destinations) {
-  return new Promise((resolve) => {
-    distanceService.getDistanceMatrix({
-      origins: origins.map(o => new google.maps.LatLng(o.lat, o.lng)),
-      destinations: destinations.map(d => new google.maps.LatLng(d.lat, d.lng)),
-      travelMode: google.maps.TravelMode.DRIVING,
-    }, (response, status) => resolve(status === 'OK' ? response : null));
-  });
+function delCli(i){if(!confirm('Remover "'+clients[i].name+'"?'))return;clients.splice(i,1);sv('mc',clients);renderClients();}
+
+function calcP(km){
+  const rk=km!==undefined?km:parseFloat(document.getElementById('kmi').value)||0;
+  const dels=getDels();const ex=Math.max(0,dels.length-1);
+  let tot=30,ke=0,kr=0,se=0;
+  if(rk>10){ke=rk-10;kr=rk<=20?2:3;tot+=ke*kr;}
+  if(ex>0){se=ex*5;tot+=se;}
+  const pk=document.getElementById('pkm'),ps=document.getElementById('pst');
+  if(ke>0){document.getElementById('pkml').textContent='+'+ke.toFixed(1)+' km excedentes × R$ '+kr+',00/km';document.getElementById('pkmv').textContent='R$ '+(ke*kr).toFixed(2);pk.style.display='flex';}else pk.style.display='none';
+  if(ex>0){document.getElementById('pstl').textContent=ex+' parada(s) adicional × R$ 5,00';document.getElementById('pstv').textContent='R$ '+se.toFixed(2);ps.style.display='flex';}else ps.style.display='none';
+  document.getElementById('ptot').textContent='R$ '+tot.toFixed(2);
+  return{total:tot,kmEx:ke,kmRate:kr,extra:ex,stEx:se,rawKm:rk};
 }
 
-function optimizeOrder(startCoord, stops) {
-  const remaining = [...stops];
-  const ordered = [];
-  let current = startCoord;
-  while (remaining.length > 0) {
-    let minDist = Infinity, minIdx = 0;
-    remaining.forEach((s, i) => {
-      const d = Math.pow(s.lat - current.lat, 2) + Math.pow(s.lng - current.lng, 2);
-      if (d < minDist) { minDist = d; minIdx = i; }
-    });
-    ordered.push(remaining[minIdx]);
-    current = remaining[minIdx];
-    remaining.splice(minIdx, 1);
-  }
-  return ordered;
+function geoA(addr,place){
+  if(place)return Promise.resolve(place);
+  return new Promise(res=>gc.geocode({address:addr,componentRestrictions:{country:'BR'}},(r,s)=>res(s==='OK'&&r.length?{lat:r[0].geometry.location.lat(),lng:r[0].geometry.location.lng(),formatted:r[0].formatted_address,original:addr}:null)));
 }
 
-function buildMapsLink(origin, stops) {
-  const parts = [encodeURIComponent(origin.formatted), ...stops.map(s => encodeURIComponent(s.formatted))];
-  return 'https://www.google.com/maps/dir/' + parts.join('/');
+async function calcRoute(){
+  if(!mr){showMsg('err','Google Maps ainda carregando.');return;}
+  const pt=document.getElementById('pu').value.trim();
+  if(!pt){showMsg('err','Informe o endereço de coleta.');return;}
+  const dels=getDels();if(!dels.length){showMsg('err','Adicione pelo menos um endereço de entrega.');return;}
+  document.getElementById('ldr').style.display='block';
+  try{
+    const pu=await geoA(pt,pp);if(!pu){showMsg('err','Endereço de coleta não encontrado.');return;}pp=pu;
+    const res=[];for(const d of dels){const g=await geoA(d.text,d.place);if(g)res.push(g);}
+    if(!res.length){showMsg('err','Nenhum endereço encontrado.');return;}
+    const ord=optO(pu,res);const pts=[pu,...ord];
+    const mx=await new Promise(r=>ds.getDistanceMatrix({origins:pts.slice(0,-1).map(p=>new google.maps.LatLng(p.lat,p.lng)),destinations:pts.slice(1).map(p=>new google.maps.LatLng(p.lat,p.lng)),travelMode:google.maps.TravelMode.DRIVING},(rs,s)=>r(s==='OK'?rs:null)));
+    let td=0;if(mx)mx.rows.forEach((r,i)=>{const e=r.elements[i];if(e&&e.status==='OK')td+=e.distance.value;});
+    const km=td/1000;document.getElementById('kmi').value=km.toFixed(1);calcP(km);showMsg('ok','Rota calculada: '+km.toFixed(1)+' km. Preço atualizado!');
+  }catch(e){showMsg('err','Erro ao calcular rota.');console.error(e);}
+  finally{document.getElementById('ldr').style.display='none';}
 }
 
-function formatDist(m) { return m >= 1000 ? (m/1000).toFixed(1)+' km' : m+' m'; }
-function formatDur(s) {
-  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60);
-  return h > 0 ? `${h}h ${m}min` : `${m} min`;
+function optO(s,stops){const r=[...stops],o=[];let c=s;while(r.length){let mi=0,md=Infinity;r.forEach((x,i)=>{const d=Math.pow(x.lat-c.lat,2)+Math.pow(x.lng-c.lng,2);if(d<md){md=d;mi=i;}});o.push(r[mi]);c=r[mi];r.splice(mi,1);}return o;}
+
+function gerarOS(){
+  const name=document.getElementById('cn').value.trim();
+  if(!name){showMsg('err','Informe o nome do cliente.');return;}
+  const pu=document.getElementById('pu').value.trim();
+  if(!pu){showMsg('err','Informe o endereço de coleta.');return;}
+  const dels=getDels();if(!dels.length){showMsg('err','Adicione pelo menos um endereço de entrega.');return;}
+  const price=calcP();const km=parseFloat(document.getElementById('kmi').value)||0;
+  const num=String(ctr).padStart(5,'0');
+  const os={id:Date.now(),num,date:new Date().toLocaleString('pt-BR'),
+    client:{name,doc:document.getElementById('cd').value.trim(),phone:document.getElementById('cp').value.trim(),email:document.getElementById('ce').value.trim()},
+    motoboy:MBS[smb],pickup:{address:pu,obs:document.getElementById('puobs').value.trim()},
+    deliveries:dels.map(d=>({address:d.text})),km,price,status:'pending'};
+  orders.unshift(os);ctr++;sv('mo',orders);sv('mn',ctr);
+  cos=os;sb=false;openModal(os,false);renderOrders();updDash();
 }
 
-async function calcularRotas() {
-  if (!mapsReady) { showError('⏳ Google Maps ainda carregando. Tente novamente em instantes.'); return; }
+function openModal(os,ib){
+  cos=os;sb=ib;
+  document.getElementById('mtitle').textContent=(ib?'Orçamento':'Ordem de Serviço')+' #'+os.num;
+  document.getElementById('docprev').innerHTML=buildDoc(os,ib);
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function toggleDoc(){if(cos)openModal(cos,!sb);}
 
-  const originText = document.getElementById('origin').value.trim();
-  if (!originText) { showError('Informe o ponto de partida.'); return; }
-
-  const rows = document.querySelectorAll('#address-list .address-row');
-  const addresses = [];
-  rows.forEach(row => {
-    const key = row.dataset.key;
-    const val = document.getElementById(`input_${key}`).value.trim();
-    if (val.length > 3) addresses.push({ text: val, key });
-  });
-
-  if (!addresses.length) { showError('Adicione pelo menos um endereço de entrega.'); return; }
-
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('report-section').style.display = 'none';
-  document.getElementById('btn-calcular').disabled = true;
-  document.getElementById('error-msg').style.display = 'none';
-
-  try {
-    const originCoord = await geocodeAddress(originText, 'origin');
-    if (!originCoord) { showError('❌ Ponto de partida não encontrado. Selecione uma sugestão da lista.'); return; }
-
-    const geocoded = [];
-    for (const addr of addresses) {
-      const g = await geocodeAddress(addr.text, addr.key);
-      if (g) geocoded.push(g);
-    }
-    if (!geocoded.length) { showError('❌ Nenhum endereço encontrado. Selecione os endereços pelas sugestões.'); return; }
-
-    const chunks = activeMotoboys.map(() => []);
-    geocoded.forEach((addr, i) => chunks[i % activeMotoboys.length].push(addr));
-
-    routeData = [];
-    for (let i = 0; i < activeMotoboys.length; i++) {
-      const motoboyId = activeMotoboys[i];
-      const stops = chunks[i];
-      if (!stops.length) continue;
-
-      const ordered = optimizeOrder(originCoord, stops);
-      let totalDist = 0, totalDur = 0;
-
-      const allPoints = [originCoord, ...ordered];
-      const matrix = await getDistanceMatrix(allPoints.slice(0,-1), allPoints.slice(1));
-
-      if (matrix) {
-        matrix.rows.forEach((row, ri) => {
-          const el = row.elements[ri];
-          if (el && el.status === 'OK') {
-            totalDist += el.distance.value;
-            totalDur += el.duration.value;
-          }
-        });
-      } else {
-        totalDist = ordered.length * 3500;
-        totalDur = ordered.length * 720;
-      }
-
-      routeData.push({
-        motoboyId,
-        name: getMotoyboyName(motoboyId),
-        stops: ordered,
-        totalDist,
-        totalDur,
-        mapsLink: buildMapsLink(originCoord, ordered)
-      });
-    }
-
-    renderResults();
-  } catch(e) {
-    showError('Erro inesperado. Tente novamente.');
-    console.error(e);
-  } finally {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('btn-calcular').disabled = false;
-  }
+function buildDoc(os,ib){
+  const p=os.price;
+  const stops=os.deliveries.map((d,i)=>`<div class="dsi"><div class="dsn">${i+1}</div><div style="font-size:13px">${d.address}</div></div>`).join('');
+  const pr=`<tr><td>Mínimo (até 10km + coleta/entrega)</td><td>R$ 30,00</td></tr>${p.kmEx>0?`<tr><td>+${p.kmEx.toFixed(1)} km × R$ ${p.kmRate},00/km</td><td>R$ ${(p.kmEx*p.kmRate).toFixed(2)}</td></tr>`:''} ${p.extra>0?`<tr><td>${p.extra} parada(s) adicional × R$ 5,00</td><td>R$ ${p.stEx.toFixed(2)}</td></tr>`:''}`;
+  return `<div class="dh"><div><div class="dco">Moto Service <span>BH</span></div><div style="font-size:11px;color:#888;margin-top:3px">Serviço de Entregas por Motoboy</div></div><div style="text-align:right"><div class="dbg">${ib?'ORÇAMENTO':'ORDEM DE SERVIÇO'}</div><div class="dn">#${os.num} · ${os.date}</div></div></div>
+  <div class="ds"><div class="dst">Cliente</div><div class="dr"><span class="dl">Nome</span><span class="dv">${os.client.name}</span></div>${os.client.doc?`<div class="dr"><span class="dl">CPF/CNPJ</span><span class="dv">${os.client.doc}</span></div>`:''} ${os.client.phone?`<div class="dr"><span class="dl">Telefone</span><span class="dv">${os.client.phone}</span></div>`:''} ${os.client.email?`<div class="dr"><span class="dl">E-mail</span><span class="dv">${os.client.email}</span></div>`:''}</div>
+  <div class="ds"><div class="dst">Coleta</div><div class="dr"><span class="dl">Endereço</span><span class="dv">${os.pickup.address}</span></div>${os.pickup.obs?`<div class="dr"><span class="dl">Obs.</span><span class="dv">${os.pickup.obs}</span></div>`:''}</div>
+  <div class="ds"><div class="dst">Entregas (${os.deliveries.length})</div><div class="dsp">${stops}</div></div>
+  <div class="ds"><div class="dst">Motoboy</div><div class="dr"><span class="dl">Responsável</span><span class="dv">${os.motoboy}</span></div><div class="dr"><span class="dl">Distância</span><span class="dv">${os.km.toFixed(1)} km</span></div></div>
+  <div class="ds"><div class="dst">Valores</div><table class="dpt">${pr}</table><div class="dtot"><span>Total</span><span>R$ ${p.total.toFixed(2)}</span></div></div>
+  ${!ib?`<div class="dsg"><div class="dsl"><div>Assinatura do cliente</div></div><div class="dsl"><div>Moto Service BH</div></div></div>`:''}
+  <div class="dft">Moto Service BH · Serviço de Entregas por Motoboy · ${new Date().getFullYear()}</div>`;
 }
 
-function renderResults() {
-  const grid = document.getElementById('results-grid');
-  grid.innerHTML = '';
-  routeData.forEach(r => {
-    const ci = activeMotoboys.indexOf(r.motoboyId);
-    const card = document.createElement('div');
-    card.className = 'route-card';
-    const linkSafe = r.mapsLink.replace(/'/g, "\\'");
-    card.innerHTML = `
-      <div class="route-header bg${ci}">
-        <div class="route-name c${ci}">🏍️ ${r.name}</div>
-        <div class="route-badge bg${ci} c${ci}">${r.stops.length} entrega${r.stops.length>1?'s':''}</div>
-      </div>
-      <div class="route-stats">
-        <div class="stat"><div class="stat-val c${ci}">${formatDist(r.totalDist)}</div><div class="stat-label">Distância</div></div>
-        <div class="stat"><div class="stat-val c${ci}">${formatDur(r.totalDur)}</div><div class="stat-label">Tempo est.</div></div>
-        <div class="stat"><div class="stat-val c${ci}">${r.stops.length}</div><div class="stat-label">Paradas</div></div>
-      </div>
-      <div class="stops-list">
-        ${r.stops.map((s,si) => `
-          <div class="stop-item">
-            <div class="stop-num num${ci}">${si+1}</div>
-            <div>
-              <div class="stop-addr">${s.original}</div>
-              <div class="stop-meta">${s.formatted}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-      <div class="route-actions">
-        <a class="btn-maps" href="${r.mapsLink}" target="_blank">🗺️ Abrir no Google Maps</a>
-        <button class="btn-copy" onclick="copiarLink('${linkSafe}', this)">Copiar link</button>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-
-  document.getElementById('results').style.display = 'block';
-  renderReport();
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function renderOrders(){
+  const c=document.getElementById('osc');
+  if(!orders.length){c.innerHTML='<div style="text-align:center;padding:60px;color:var(--mt)">Nenhuma OS gerada ainda.</div>';return;}
+  c.innerHTML='<div class="osl">'+orders.map((os,i)=>`<div class="osc"><div class="osn">#${os.num}</div><div class="osi"><div class="oscl">${os.client.name}</div><div class="osm">${os.date} · ${os.motoboy} · ${os.deliveries.length} entrega(s) · ${os.km.toFixed(1)} km</div></div><span class="ost ${os.status==='done'?'sp2':'sp1'}">${os.status==='done'?'✓ Concluído':'⏳ Pendente'}</span><div class="osp">R$ ${os.price.total.toFixed(2)}</div><div class="osa"><button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="openModal(orders[${i}],false)">Ver OS</button><button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="openModal(orders[${i}],true)">Orçamento</button><button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="togSt(${i})">${os.status==='done'?'↩ Reabrir':'✓ Concluir'}</button></div></div>`).join('')+'</div>';
 }
 
-function copiarLink(link, btn) {
-  navigator.clipboard.writeText(link).then(() => {
-    btn.textContent = '✓ Copiado!';
-    setTimeout(() => btn.textContent = 'Copiar link', 2000);
-  });
+function togSt(i){orders[i].status=orders[i].status==='done'?'pending':'done';sv('mo',orders);renderOrders();updDash();}
+
+function updDash(){
+  document.getElementById('sos').textContent=orders.length;
+  document.getElementById('scli').textContent=clients.length;
+  document.getElementById('srev').textContent='R$ '+orders.reduce((s,o)=>s+o.price.total,0).toFixed(0);
+  document.getElementById('skm').textContent=orders.reduce((s,o)=>s+o.km,0).toFixed(0)+' km';
+  const r=document.getElementById('ros');
+  if(!orders.length){r.innerHTML='<div style="color:var(--mt);font-size:13px">Nenhuma ordem ainda.</div>';return;}
+  r.innerHTML=orders.slice(0,5).map(os=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--bd)"><div><div style="font-weight:500;font-size:14px">#${os.num} · ${os.client.name}</div><div style="font-size:12px;color:var(--mt)">${os.date} · ${os.motoboy}</div></div><div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gn)">R$ ${os.price.total.toFixed(2)}</div></div>`).join('');
 }
 
-function renderReport() {
-  const totDist = routeData.reduce((s,r)=>s+r.totalDist,0);
-  const totDur  = routeData.reduce((s,r)=>s+r.totalDur,0);
-  const totStop = routeData.reduce((s,r)=>s+r.stops.length,0);
-  document.getElementById('report-stats').innerHTML = `
-    <div class="report-stat"><div class="report-stat-val">${totStop}</div><div class="report-stat-label">Total de entregas</div></div>
-    <div class="report-stat"><div class="report-stat-val">${formatDist(totDist)}</div><div class="report-stat-label">Distância total</div></div>
-    <div class="report-stat"><div class="report-stat-val">${formatDur(totDur)}</div><div class="report-stat-label">Tempo total est.</div></div>
-  `;
-  document.getElementById('report-tbody').innerHTML = routeData.map(r => `
-    <tr>
-      <td>${r.name}</td>
-      <td>${r.stops.length}</td>
-      <td>${formatDist(r.totalDist)}</td>
-      <td>${formatDur(r.totalDur)}</td>
-    </tr>`).join('');
-  document.getElementById('report-section').style.display = 'block';
-}
-
-function exportarRelatorio() {
-  const now = new Date().toLocaleString('pt-BR');
-  let txt = `RELATÓRIO DE ROTAS — RotaFácil\nGerado em: ${now}\n\n=== RESUMO ===\n`;
-  txt += `Total de entregas: ${routeData.reduce((s,r)=>s+r.stops.length,0)}\n`;
-  txt += `Distância total: ${formatDist(routeData.reduce((s,r)=>s+r.totalDist,0))}\n`;
-  txt += `Tempo estimado total: ${formatDur(routeData.reduce((s,r)=>s+r.totalDur,0))}\n\n`;
-  routeData.forEach(r => {
-    txt += `=== ${r.name.toUpperCase()} ===\n`;
-    txt += `Entregas: ${r.stops.length} | Distância: ${formatDist(r.totalDist)} | Tempo: ${formatDur(r.totalDur)}\n`;
-    txt += `Link Maps: ${r.mapsLink}\n`;
-    r.stops.forEach((s,i) => txt += `  ${i+1}. ${s.original}\n`);
-    txt += '\n';
-  });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([txt], {type:'text/plain;charset=utf-8'}));
-  a.download = `rotas_${new Date().toISOString().slice(0,10)}.txt`;
-  a.click();
-}
+function showMsg(t,m){const el=document.getElementById(t==='err'?'errmsg':'okmsg');el.textContent=m;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+calcP();
 </script>
-
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg&callback=initMaps&libraries=places,geometry" async defer></script>
 </body>
 </html>
