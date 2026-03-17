@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RotaFácil — Otimizador de Entregas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #181818;
+    --surface2: #222222;
+    --border: #2a2a2a;
+    --accent: #f5c842;
+    --accent2: #ff6b35;
+    --text: #f0ede6;
+    --muted: #888;
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --red: #f87171;
+    --r0: #f5c842;
+    --r1: #ff6b35;
+    --r2: #a78bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; min-height: 100vh; }
+
+  header { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(15,15,15,0.95); backdrop-filter: blur(8px); z-index: 100; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent); }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+  .page-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 28px; margin-bottom: 6px; }
+  .page-sub { color: var(--muted); margin-bottom: 32px; font-size: 14px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media(max-width:700px){ .grid { grid-template-columns: 1fr; } }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .card-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color .2s; }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+  input::placeholder, textarea::placeholder { color: #555; }
+  .field { margin-bottom: 16px; }
+
+  .motoboys-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .motoboy-btn { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--muted); transition: all .2s; }
+  .motoboy-btn[data-id="0"].active { border-color: var(--r0); background: rgba(245,200,66,.08); color: var(--r0); }
+  .motoboy-btn[data-id="1"].active { border-color: var(--r1); background: rgba(255,107,53,.08); color: var(--r1); }
+  .motoboy-btn[data-id="2"].active { border-color: var(--r2); background: rgba(167,139,250,.08); color: var(--r2); }
+  .motoboy-name-input { background: transparent; border: none; color: inherit; font-family: 'DM Sans', sans-serif; font-size: 13px; width: 90px; outline: none; padding: 0; cursor: text; }
+
+  .btn-primary { width: 100%; background: var(--accent); color: #0f0f0f; border: none; border-radius: 12px; padding: 14px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 8px; transition: opacity .2s, transform .1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .loading { display: none; text-align: center; padding: 40px; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-msg { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-top: 12px; display: none; line-height: 1.5; }
+
+  #results { display: none; margin-top: 32px; }
+  .results-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; margin-bottom: 20px; }
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+
+  .route-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .route-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .route-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .route-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .route-stats { display: flex; gap: 16px; padding: 14px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .stat { flex: 1; }
+  .stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .stops-list { padding: 16px 20px; }
+  .stop-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .stop-item:last-child { border-bottom: none; }
+  .stop-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+  .stop-addr { font-size: 13px; line-height: 1.4; }
+  .stop-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .route-actions { padding: 16px 20px; display: flex; gap: 10px; }
+  .btn-maps { flex: 1; background: #1a73e8; color: white; border: none; border-radius: 10px; padding: 10px; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .2s; }
+  .btn-maps:hover { opacity: 0.85; }
+  .btn-copy { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: background .2s; }
+  .btn-copy:hover { background: var(--border); }
+
+  #report-section { display: none; margin-top: 24px; }
+  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .report-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 16px; color: var(--accent); }
+  .report-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
+  @media(max-width:500px){ .report-grid { grid-template-columns: 1fr 1fr; } }
+  .report-stat { background: var(--surface2); border-radius: 12px; padding: 14px; }
+  .report-stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: var(--accent); }
+  .report-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .report-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .report-table th { text-align: left; padding: 8px 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+  .report-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .report-table tr:last-child td { border-bottom: none; }
+  .btn-export { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; margin-top: 16px; transition: background .2s; }
+  .btn-export:hover { background: var(--border); }
+
+  .info-box { background: rgba(245,200,66,.07); border: 1px solid rgba(245,200,66,.2); border-radius: 10px; padding: 12px 16px; font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+
+  .c0{color:var(--r0)} .c1{color:var(--r1)} .c2{color:var(--r2)}
+  .bg0{background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.3)}
+  .bg1{background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.3)}
+  .bg2{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3)}
+  .num0{background:rgba(245,200,66,.2);color:var(--r0)}
+  .num1{background:rgba(255,107,53,.2);color:var(--r1)}
+  .num2{background:rgba(167,139,250,.2);color:var(--r2)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Rota<span>Fácil</span></div>
+  <div class="badge">🏍️ Otimizador de Entregas</div>
+</header>
+
+<div class="container">
+  <div class="page-title">Planejar entregas do dia</div>
+  <div class="page-sub">Cole os endereços, defina os motoboys e gere as rotas otimizadas.</div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Ponto de partida</div>
+        <div class="field">
+          <label>Endereço base (de onde os motoboys saem)</label>
+          <input type="text" id="origin" placeholder="Ex: Av. Afonso Pena, 1000, Belo Horizonte, MG">
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-title"><span class="dot" style="background:var(--accent2)"></span>Motoboys hoje</div>
+        <div class="motoboys-row">
+          <button class="motoboy-btn active" data-id="0" onclick="toggleMotoboy(0)">
+            <span>🏍️</span>
+            <input class="motoboy-name-input" value="Motoboy 1" onclick="event.stopPropagation()">
+          </button>
+          <button class="motoboy-btn" data-id="1" onclick="toggleMotoboy(1)">
+            <span>🏍️</span>
+            <input class="motoboy-name-input" value="Motoboy 2" onclick="event.stopPropagation()">
+          </button>
+          <button class="motoboy-btn" data-id="2" onclick="toggleMotoboy(2)">
+            <span>🏍️</span>
+            <input class="motoboy-name-input" value="Motoboy 3" onclick="event.stopPropagation()">
+          </button>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">Clique para ativar/desativar. Edite o nome diretamente.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--blue)"></span>Endereços de entrega</div>
+        <div class="field">
+          <label>Um endereço por linha</label>
+          <textarea id="addresses" placeholder="Rua dos Carijós, 50, Belo Horizonte, MG&#10;Av. Brasil, 420, Belo Horizonte, MG&#10;Rua Espírito Santo, 800, Belo Horizonte, MG&#10;Rua da Bahia, 110, Belo Horizonte, MG"></textarea>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">As entregas serão distribuídas entre os motoboys ativos.</div>
+        <button class="btn-primary" onclick="calcularRotas()" id="btn-calcular">
+          ⚡ Calcular rotas otimizadas
+        </button>
+        <div class="info-box">💡 Para melhores resultados, inclua cidade e estado nos endereços. Ex: "Rua X, 100, Belo Horizonte, MG"</div>
+        <div class="error-msg" id="error-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div style="color:var(--muted);font-size:14px">Calculando rotas com Google Maps...</div>
+  </div>
+
+  <div id="results">
+    <div class="results-title">🗺️ Rotas do dia</div>
+    <div class="results-grid" id="results-grid"></div>
+  </div>
+
+  <div id="report-section">
+    <div class="report-card">
+      <div class="report-title">📊 Relatório da operação</div>
+      <div class="report-grid" id="report-stats"></div>
+      <table class="report-table">
+        <thead><tr><th>Motoboy</th><th>Entregas</th><th>Distância</th><th>Tempo est.</th></tr></thead>
+        <tbody id="report-tbody"></tbody>
+      </table>
+      <button class="btn-export" onclick="exportarRelatorio()">⬇️ Exportar relatório (.txt)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GOOGLE_API_KEY = 'AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg';
+let activeMotoboys = [0];
+let routeData = [];
+let geocoder, distanceService;
+let mapsReady = false;
+
+window.initMaps = function() {
+  geocoder = new google.maps.Geocoder();
+  distanceService = new google.maps.DistanceMatrixService();
+  mapsReady = true;
+};
+
+function toggleMotoboy(id) {
+  const btn = document.querySelector(`.motoboy-btn[data-id="${id}"]`);
+  if (activeMotoboys.includes(id)) {
+    if (activeMotoboys.length === 1) return;
+    activeMotoboys = activeMotoboys.filter(x => x !== id);
+    btn.classList.remove('active');
+  } else {
+    activeMotoboys.push(id);
+    btn.classList.add('active');
+  }
+}
+
+function getMotoyboyName(id) {
+  const input = document.querySelector(`.motoboy-btn[data-id="${id}"] .motoboy-name-input`);
+  return input ? input.value.trim() || `Motoboy ${id+1}` : `Motoboy ${id+1}`;
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.innerHTML = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 10000);
+}
+
+function geocodeAddress(address) {
+  return new Promise((resolve) => {
+    geocoder.geocode({ address }, (results, status) => {
+      if (status === 'OK' && results.length > 0) {
+        resolve({
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng(),
+          formatted: results[0].formatted_address,
+          original: address
+        });
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
+function getDistanceMatrix(origins, destinations) {
+  return new Promise((resolve) => {
+    distanceService.getDistanceMatrix({
+      origins: origins.map(o => new google.maps.LatLng(o.lat, o.lng)),
+      destinations: destinations.map(d => new google.maps.LatLng(d.lat, d.lng)),
+      travelMode: google.maps.TravelMode.DRIVING,
+    }, (response, status) => {
+      resolve(status === 'OK' ? response : null);
+    });
+  });
+}
+
+function optimizeOrder(startCoord, stops) {
+  const remaining = [...stops];
+  const ordered = [];
+  let current = startCoord;
+  while (remaining.length > 0) {
+    let minDist = Infinity, minIdx = 0;
+    remaining.forEach((s, i) => {
+      const d = Math.pow(s.lat - current.lat, 2) + Math.pow(s.lng - current.lng, 2);
+      if (d < minDist) { minDist = d; minIdx = i; }
+    });
+    ordered.push(remaining[minIdx]);
+    current = remaining[minIdx];
+    remaining.splice(minIdx, 1);
+  }
+  return ordered;
+}
+
+function buildMapsLink(origin, stops) {
+  const parts = [encodeURIComponent(origin.formatted), ...stops.map(s => encodeURIComponent(s.formatted))];
+  return 'https://www.google.com/maps/dir/' + parts.join('/');
+}
+
+function formatDist(m) { return m >= 1000 ? (m/1000).toFixed(1)+' km' : m+' m'; }
+function formatDur(s) {
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60);
+  return h > 0 ? `${h}h ${m}min` : `${m} min`;
+}
+
+async function calcularRotas() {
+  if (!mapsReady) {
+    showError('⏳ Google Maps ainda carregando. Aguarde um segundo e tente novamente.');
+    return;
+  }
+
+  const originText = document.getElementById('origin').value.trim();
+  const addressText = document.getElementById('addresses').value.trim();
+  if (!originText) { showError('Informe o ponto de partida.'); return; }
+  if (!addressText) { showError('Cole pelo menos um endereço de entrega.'); return; }
+
+  const addresses = addressText.split('\n').map(a => a.trim()).filter(a => a.length > 3);
+  if (!addresses.length) { showError('Nenhum endereço válido encontrado.'); return; }
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('report-section').style.display = 'none';
+  document.getElementById('btn-calcular').disabled = true;
+  document.getElementById('error-msg').style.display = 'none';
+
+  try {
+    const originCoord = await geocodeAddress(originText);
+    if (!originCoord) {
+      showError('❌ Ponto de partida não encontrado. Tente incluir cidade e estado. Ex: "Av. Afonso Pena, 1000, Belo Horizonte, MG"');
+      return;
+    }
+
+    const geocoded = [];
+    for (const addr of addresses) {
+      const g = await geocodeAddress(addr);
+      if (g) geocoded.push(g);
+    }
+    if (!geocoded.length) {
+      showError('❌ Nenhum endereço foi encontrado. Verifique se estão completos com cidade e estado.');
+      return;
+    }
+
+    const chunks = activeMotoboys.map(() => []);
+    geocoded.forEach((addr, i) => chunks[i % activeMotoboys.length].push(addr));
+
+    routeData = [];
+    for (let i = 0; i < activeMotoboys.length; i++) {
+      const motoboyId = activeMotoboys[i];
+      const stops = chunks[i];
+      if (!stops.length) continue;
+
+      const ordered = optimizeOrder(originCoord, stops);
+      let totalDist = 0, totalDur = 0;
+
+      const allPoints = [originCoord, ...ordered];
+      const matrix = await getDistanceMatrix(allPoints.slice(0,-1), allPoints.slice(1));
+
+      if (matrix) {
+        matrix.rows.forEach((row, ri) => {
+          const el = row.elements[ri];
+          if (el && el.status === 'OK') {
+            totalDist += el.distance.value;
+            totalDur += el.duration.value;
+          }
+        });
+      } else {
+        totalDist = ordered.length * 3500;
+        totalDur = ordered.length * 720;
+      }
+
+      routeData.push({
+        motoboyId,
+        name: getMotoyboyName(motoboyId),
+        stops: ordered,
+        totalDist,
+        totalDur,
+        mapsLink: buildMapsLink(originCoord, ordered)
+      });
+    }
+
+    renderResults();
+  } catch(e) {
+    showError('Erro inesperado. Verifique os endereços e tente novamente.');
+    console.error(e);
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btn-calcular').disabled = false;
+  }
+}
+
+function renderResults() {
+  const grid = document.getElementById('results-grid');
+  grid.innerHTML = '';
+
+  routeData.forEach(r => {
+    const ci = activeMotoboys.indexOf(r.motoboyId);
+    const card = document.createElement('div');
+    card.className = 'route-card';
+    const linkSafe = r.mapsLink.replace(/'/g, "\\'");
+    card.innerHTML = `
+      <div class="route-header bg${ci}">
+        <div class="route-name c${ci}">🏍️ ${r.name}</div>
+        <div class="route-badge bg${ci} c${ci}">${r.stops.length} entrega${r.stops.length>1?'s':''}</div>
+      </div>
+      <div class="route-stats">
+        <div class="stat"><div class="stat-val c${ci}">${formatDist(r.totalDist)}</div><div class="stat-label">Distância</div></div>
+        <div class="stat"><div class="stat-val c${ci}">${formatDur(r.totalDur)}</div><div class="stat-label">Tempo est.</div></div>
+        <div class="stat"><div class="stat-val c${ci}">${r.stops.length}</div><div class="stat-label">Paradas</div></div>
+      </div>
+      <div class="stops-list">
+        ${r.stops.map((s,si) => `
+          <div class="stop-item">
+            <div class="stop-num num${ci}">${si+1}</div>
+            <div>
+              <div class="stop-addr">${s.original}</div>
+              <div class="stop-meta">${s.formatted}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="route-actions">
+        <a class="btn-maps" href="${r.mapsLink}" target="_blank">🗺️ Abrir no Google Maps</a>
+        <button class="btn-copy" onclick="copiarLink('${linkSafe}', this)">Copiar link</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('results').style.display = 'block';
+  renderReport();
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copiarLink(link, btn) {
+  navigator.clipboard.writeText(link).then(() => {
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar link', 2000);
+  });
+}
+
+function renderReport() {
+  const totDist = routeData.reduce((s,r)=>s+r.totalDist,0);
+  const totDur  = routeData.reduce((s,r)=>s+r.totalDur,0);
+  const totStop = routeData.reduce((s,r)=>s+r.stops.length,0);
+
+  document.getElementById('report-stats').innerHTML = `
+    <div class="report-stat"><div class="report-stat-val">${totStop}</div><div class="report-stat-label">Total de entregas</div></div>
+    <div class="report-stat"><div class="report-stat-val">${formatDist(totDist)}</div><div class="report-stat-label">Distância total</div></div>
+    <div class="report-stat"><div class="report-stat-val">${formatDur(totDur)}</div><div class="report-stat-label">Tempo total est.</div></div>
+  `;
+  document.getElementById('report-tbody').innerHTML = routeData.map(r => `
+    <tr>
+      <td>${r.name}</td>
+      <td>${r.stops.length}</td>
+      <td>${formatDist(r.totalDist)}</td>
+      <td>${formatDur(r.totalDur)}</td>
+    </tr>`).join('');
+
+  document.getElementById('report-section').style.display = 'block';
+}
+
+function exportarRelatorio() {
+  const now = new Date().toLocaleString('pt-BR');
+  let txt = `RELATÓRIO DE ROTAS — RotaFácil\nGerado em: ${now}\n\n`;
+  txt += `=== RESUMO ===\n`;
+  txt += `Total de entregas: ${routeData.reduce((s,r)=>s+r.stops.length,0)}\n`;
+  txt += `Distância total: ${formatDist(routeData.reduce((s,r)=>s+r.totalDist,0))}\n`;
+  txt += `Tempo estimado total: ${formatDur(routeData.reduce((s,r)=>s+r.totalDur,0))}\n\n`;
+  routeData.forEach(r => {
+    txt += `=== ${r.name.toUpperCase()} ===\n`;
+    txt += `Entregas: ${r.stops.length} | Distância: ${formatDist(r.totalDist)} | Tempo: ${formatDur(r.totalDur)}\n`;
+    txt += `Link Maps: ${r.mapsLink}\n`;
+    r.stops.forEach((s,i) => txt += `  ${i+1}. ${s.original}\n`);
+    txt += '\n';
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], {type:'text/plain;charset=utf-8'}));
+  a.download = `rotas_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg&callback=initMaps&libraries=geometry" async defer></script>
+</body>
+</html>
