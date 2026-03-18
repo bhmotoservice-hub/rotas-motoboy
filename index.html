@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moto Service BH</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--bg:#0f0f0f;--sf:#181818;--sf2:#222;--bd:#2a2a2a;--ac:#f5c842;--ac2:#ff6b35;--tx:#f0ede6;--mt:#888;--bl:#60a5fa;--rd:#f87171;--gn:#4ade80}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -29,7 +30,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 label{display:block;font-size:12px;color:var(--mt);margin-bottom:4px}
 input,select,textarea{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 13px;outline:none;transition:border-color .2s;appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--ac)}
-input::placeholder{color:#555}
+input::placeholder,textarea::placeholder{color:#555}
 select option{background:#1e1e1e}
 .pac-container{background:#1e1e1e!important;border:1px solid var(--bd)!important;border-radius:10px!important;margin-top:4px!important;box-shadow:0 8px 24px rgba(0,0,0,.5)!important;font-family:'DM Sans',sans-serif!important;overflow:hidden;z-index:9999!important}
 .pac-item{padding:9px 13px!important;border-top:1px solid var(--bd)!important;color:var(--tx)!important;font-size:13px!important;cursor:pointer!important;background:transparent!important}
@@ -41,6 +42,8 @@ select option{background:#1e1e1e}
 .btn{border:none;border-radius:10px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .bp{background:var(--ac);color:#0f0f0f;font-weight:500}.bp:hover{opacity:.9}
 .bs{background:var(--sf2);border:1px solid var(--bd);color:var(--tx)}.bs:hover{border-color:var(--ac);color:var(--ac)}
+.bgreen{background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:var(--gn)}.bgreen:hover{background:rgba(74,222,128,.25)}
+.bdanger{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--rd)}.bdanger:hover{background:rgba(248,113,113,.2)}
 .bfull{width:100%;justify-content:center;padding:13px;font-size:14px;font-family:'Syne',sans-serif;font-weight:700}
 .ar{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .an{width:24px;height:24px;border-radius:50%;background:var(--sf2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--mt);flex-shrink:0}
@@ -58,64 +61,72 @@ select option{background:#1e1e1e}
 .msg{border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px;display:none;line-height:1.5}
 .merr{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--rd)}
 .mok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--gn)}
-.ld{display:none;text-align:center;padding:24px}
-.sp{width:30px;height:30px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+.ld{display:none;text-align:center;padding:20px}
+.sp{width:28px;height:28px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.osl{display:flex;flex-direction:column;gap:10px}
-.osc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.osn{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:var(--ac);min-width:70px}
-.osi{flex:1;min-width:140px}
-.oscl{font-weight:500;font-size:14px}
-.osm{font-size:12px;color:var(--mt);margin-top:2px}
-.osp{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--gn);min-width:70px;text-align:right}
-.ost{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
-.sp1{background:rgba(245,200,66,.15);color:#f5c842}
-.sp2{background:rgba(74,222,128,.15);color:var(--gn)}
-.osa{display:flex;gap:7px;flex-wrap:wrap}
-.clc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
-.cla{width:38px;height:38px;border-radius:50%;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--ac);flex-shrink:0}
-.clni{flex:1}.clnm{font-weight:500;font-size:14px}.clmt{font-size:12px;color:var(--mt);margin-top:2px}
+/* list cards */
+.row-card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:15px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.row-num{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--ac);min-width:90px}
+.row-info{flex:1;min-width:140px}
+.row-name{font-weight:500;font-size:14px}
+.row-meta{font-size:12px;color:var(--mt);margin-top:2px}
+.row-price{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--gn);min-width:80px;text-align:right}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.b-pend{background:rgba(245,200,66,.15);color:#f5c842}
+.b-aprov{background:rgba(74,222,128,.15);color:var(--gn)}
+.b-open{background:rgba(96,165,250,.15);color:var(--bl)}
+.b-closed{background:rgba(167,139,250,.15);color:#a78bfa}
+/* stats */
 .sr{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 @media(max-width:700px){.sr{grid-template-columns:1fr 1fr}}
 .sc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px}
-.sv{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--ac)}
+.sv2{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--ac)}
 .sl{font-size:12px;color:var(--mt);margin-top:3px}
+/* client search */
 .csw{position:relative}
-.csd{position:absolute;top:100%;left:0;right:0;background:#1e1e1e;border:1px solid var(--bd);border-radius:10px;margin-top:3px;z-index:100;display:none;max-height:180px;overflow-y:auto}
+.csd{position:absolute;top:100%;left:0;right:0;background:#1e1e1e;border:1px solid var(--bd);border-radius:10px;margin-top:3px;z-index:300;display:none;max-height:200px;overflow-y:auto}
 .cso{padding:9px 13px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--bd);transition:background .15s}
 .cso:last-child{border-bottom:none}.cso:hover{background:var(--sf2)}
 .con{font-weight:500}.com{font-size:11px;color:var(--mt);margin-top:1px}
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+/* modal */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
 .mo.open{display:flex}
-.md{background:var(--sf);border:1px solid var(--bd);border-radius:18px;width:100%;max-width:660px;max-height:92vh;overflow-y:auto}
-.mh{padding:18px 22px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sf);z-index:10;border-radius:18px 18px 0 0}
+.md{background:var(--sf);border:1px solid var(--bd);border-radius:18px;width:100%;max-width:680px;max-height:92vh;overflow-y:auto}
+.mh{padding:16px 22px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sf);z-index:10;border-radius:18px 18px 0 0}
 .mt2{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
-.mc{background:var(--sf2);border:1px solid var(--bd);color:var(--mt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.mc:hover{color:var(--tx)}
+.mc2{background:var(--sf2);border:1px solid var(--bd);color:var(--mt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
+.mc2:hover{color:var(--tx)}
 .mb2{padding:22px}
-.ma{padding:14px 22px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}
+.ma{padding:14px 22px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+/* document */
 .doc{background:white;color:#111;border-radius:10px;padding:28px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6}
 .dh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #111}
 .dco{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#111}.dco span{color:#e5a800}
 .dbg{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;background:#111;color:white;padding:4px 13px;border-radius:20px}
-.dn{font-size:11px;color:#666;margin-top:3px;text-align:right}
-.ds{margin-bottom:18px}
-.dst{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:7px}
+.dnum{font-size:11px;color:#666;margin-top:3px;text-align:right}
+.ds{margin-bottom:16px}
+.dst{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px}
 .dr{display:flex;gap:7px;margin-bottom:3px}
-.dl{font-weight:500;min-width:95px;color:#444;font-size:13px}
-.dv{color:#111;font-size:13px}
+.dl{font-weight:500;min-width:100px;color:#444;font-size:13px}
+.dv{color:#111;font-size:13px;flex:1}
 .dsp{background:#f8f8f8;border-radius:8px;padding:10px}
 .dsi{display:flex;gap:9px;padding:5px 0;border-bottom:1px solid #eee}
 .dsi:last-child{border-bottom:none}
 .dsn{width:20px;height:20px;border-radius:50%;background:#111;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0;margin-top:1px}
-.dpt{width:100%;border-collapse:collapse;font-size:13px}
-.dpt td{padding:5px 0;border-bottom:1px solid #eee}
-.dpt td:last-child{text-align:right;font-weight:500}
-.dtot{display:flex;justify-content:space-between;font-family:'Syne',sans-serif;font-weight:800;font-size:17px;margin-top:10px;padding-top:10px;border-top:2px solid #111}
+.dtot{display:flex;justify-content:space-between;align-items:center;background:#f5f5f5;border-radius:8px;padding:12px 16px;margin-top:12px}
+.dtot-label{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#444}
+.dtot-val{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#111}
 .dft{margin-top:20px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center}
 .dsg{display:flex;justify-content:space-between;margin-top:28px;gap:18px}
 .dsl{flex:1;text-align:center}
 .dsl div{border-top:1px solid #999;padding-top:7px;font-size:11px;color:#666}
+/* report table */
+.rtable{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.rtable th{text-align:left;padding:9px 12px;color:var(--mt);font-weight:500;border-bottom:1px solid var(--bd);font-size:12px}
+.rtable td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:top}
+.rtable tr:last-child td{border-bottom:none}
+.rtable textarea{min-height:36px;font-size:12px;padding:5px 8px;resize:none}
 @media print{body *{display:none!important}.doc,.doc *{display:revert!important}.doc{border-radius:0;padding:18px}}
 </style>
 </head>
@@ -123,297 +134,694 @@ select option{background:#1e1e1e}
 <header>
   <div class="logo">Moto Service <span>BH</span></div>
   <div class="nav">
-    <button class="nb active" onclick="showPage('nova')">📋 Nova OS</button>
-    <button class="nb" onclick="showPage('ordens')">📦 Ordens</button>
-    <button class="nb" onclick="showPage('clientes')">👥 Clientes</button>
-    <button class="nb" onclick="showPage('dash')">📊 Dashboard</button>
+    <button class="nb active" onclick="showPage('clientes')">👥 Clientes</button>
+    <button class="nb" onclick="showPage('orcamentos')">📄 Orçamentos</button>
+    <button class="nb" onclick="showPage('ordens')">📋 Ordens de Serviço</button>
+    <button class="nb" onclick="showPage('relatorio')">📊 Relatório</button>
   </div>
 </header>
 
-<div class="pg active" id="pg-nova">
-  <div class="pt">Nova Ordem de Serviço</div>
-  <div class="ps">Preencha os dados para gerar a OS e o orçamento.</div>
+<!-- ===== CLIENTES ===== -->
+<div class="pg active" id="pg-clientes">
+  <div class="pt">Clientes</div>
+  <div class="ps">Cadastre e gerencie sua base de clientes.</div>
   <div class="g2">
     <div>
       <div class="card">
-        <div class="ct"><span class="dot"></span>Dados do cliente</div>
-        <div class="fi"><label>Buscar cliente cadastrado</label>
-          <div class="csw"><input type="text" id="csearch" placeholder="Digite nome ou CNPJ..." autocomplete="off" oninput="searchCli(this.value)"><div class="csd" id="csd"></div></div>
+        <div class="ct"><span class="dot"></span>Novo cliente</div>
+        <div class="fi"><label>Nome / Razão Social *</label><input type="text" id="cli-name" placeholder="Nome completo ou empresa"></div>
+        <div class="fi"><label>CPF / CNPJ</label><input type="text" id="cli-doc" placeholder="000.000.000-00 ou 00.000.000/0001-00"></div>
+        <div class="fi"><label>Endereço completo</label><input type="text" id="cli-addr" placeholder="Rua, número, bairro, cidade"></div>
+        <div class="fr">
+          <div><label>Telefone</label><input type="tel" id="cli-phone" placeholder="(31) 99999-9999"></div>
+          <div><label>E-mail</label><input type="email" id="cli-email" placeholder="email@exemplo.com"></div>
         </div>
-        <div class="fr"><div><label>Nome / Razão Social *</label><input type="text" id="cn" placeholder="Nome ou empresa"></div><div><label>CPF / CNPJ</label><input type="text" id="cd" placeholder="Opcional"></div></div>
-        <div class="fr"><div><label>Telefone</label><input type="tel" id="cp" placeholder="(31) 99999-9999"></div><div><label>E-mail</label><input type="email" id="ce" placeholder="email@exemplo.com"></div></div>
-        <div style="display:flex;justify-content:flex-end"><button class="btn bs" onclick="saveCli()" style="font-size:12px;padding:6px 13px">💾 Salvar cliente</button></div>
-      </div>
-      <div class="card">
-        <div class="ct"><span class="dot" style="background:var(--bl)"></span>Endereço de coleta</div>
-        <div class="fi"><input type="text" id="pu" placeholder="Digite o endereço de coleta..."></div>
-        <div class="fi"><label>Observação (opcional)</label><input type="text" id="puobs" placeholder="Ex: Portaria B, sala 201..."></div>
-      </div>
-      <div class="card">
-        <div class="ct"><span class="dot" style="background:var(--ac2)"></span>Motoboy responsável</div>
-        <div class="mbs" id="mbs">
-          <div class="mbo active" data-id="0" onclick="selMB(0)">🏍️ Motoboy 1</div>
-          <div class="mbo" data-id="1" onclick="selMB(1)">🏍️ Motoboy 2</div>
-          <div class="mbo" data-id="2" onclick="selMB(2)">🏍️ Motoboy 3</div>
-        </div>
+        <div class="msg merr" id="cli-err"></div>
+        <div class="msg mok" id="cli-ok"></div>
+        <button class="btn bp bfull" style="margin-top:8px" onclick="saveCli()">💾 Salvar cliente</button>
       </div>
     </div>
     <div>
       <div class="card">
-        <div class="ct"><span class="dot" style="background:var(--ac2)"></span>Endereços de entrega</div>
-        <div id="dlist"></div>
-        <button class="badd" onclick="addDel()">+ Adicionar endereço de entrega</button>
+        <div class="ct"><span class="dot" style="background:var(--bl)"></span>Clientes cadastrados</div>
+        <div id="cli-list"><div style="color:var(--mt);font-size:13px;text-align:center;padding:30px 0">Nenhum cliente ainda.</div></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ORÇAMENTOS ===== -->
+<div class="pg" id="pg-orcamentos">
+  <div class="pt">Orçamentos</div>
+  <div class="ps">Crie orçamentos para enviar aos clientes.</div>
+  <div class="g2">
+    <div>
+      <!-- cliente -->
       <div class="card">
-        <div class="ct"><span class="dot" style="background:var(--gn)"></span>Cálculo do serviço</div>
-        <div class="fi"><label>Distância total (km)</label>
-          <input type="number" id="kmi" placeholder="Ex: 15" min="0" step="0.1" oninput="calcP()">
-          <div style="font-size:11px;color:var(--mt);margin-top:3px">Calculado automaticamente ao clicar em "Calcular rota" ou informe manualmente.</div>
+        <div class="ct"><span class="dot"></span>Cliente</div>
+        <div class="fi">
+          <label>Buscar cliente cadastrado</label>
+          <div class="csw">
+            <input type="text" id="orc-csearch" placeholder="Digite o nome..." autocomplete="off" oninput="searchCli('orc',this.value)">
+            <div class="csd" id="orc-csd"></div>
+          </div>
+        </div>
+        <div class="fi"><label>Nome *</label><input type="text" id="orc-cname" placeholder="Nome do cliente"></div>
+        <div class="fi"><label>CPF / CNPJ</label><input type="text" id="orc-cdoc" placeholder=""></div>
+        <div class="fi"><label>Endereço</label><input type="text" id="orc-caddr" placeholder=""></div>
+        <div class="fr">
+          <div><label>Telefone</label><input type="tel" id="orc-cphone" placeholder=""></div>
+          <div><label>E-mail</label><input type="email" id="orc-cemail" placeholder=""></div>
+        </div>
+      </div>
+      <!-- coleta -->
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--bl)"></span>Endereço de coleta</div>
+        <div class="fi"><input type="text" id="orc-pickup" placeholder="Endereço de coleta..."></div>
+        <div class="fi"><label>Observação</label><input type="text" id="orc-pickup-obs" placeholder="Ex: Portaria B, sala 201..."></div>
+      </div>
+      <!-- motoboy -->
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--ac2)"></span>Motoboy</div>
+        <div class="mbs" id="orc-mbs">
+          <div class="mbo active" data-id="0" onclick="selMB('orc',0)">🏍️ Motoboy 1</div>
+          <div class="mbo" data-id="1" onclick="selMB('orc',1)">🏍️ Motoboy 2</div>
+          <div class="mbo" data-id="2" onclick="selMB('orc',2)">🏍️ Motoboy 3</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <!-- entregas -->
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--ac2)"></span>Endereços de entrega</div>
+        <div id="orc-dlist"></div>
+        <button class="badd" onclick="addDel('orc')">+ Adicionar endereço de entrega</button>
+      </div>
+      <!-- preço -->
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--gn)"></span>Valor do serviço</div>
+        <div class="fi">
+          <label>Distância total (km)</label>
+          <input type="number" id="orc-km" placeholder="Ex: 15" min="0" step="0.1" oninput="calcP('orc')">
+          <div style="font-size:11px;color:var(--mt);margin-top:3px">Informe manualmente ou use "Calcular rota".</div>
         </div>
         <div class="pbox">
           <div class="prow"><span>Mínimo (até 10km + coleta/entrega)</span><span>R$ 30,00</span></div>
-          <div class="prow" id="pkm" style="display:none"><span id="pkml"></span><span id="pkmv"></span></div>
-          <div class="prow" id="pst" style="display:none"><span id="pstl"></span><span id="pstv"></span></div>
-          <div class="ptot"><span>Total</span><span id="ptot">R$ 30,00</span></div>
+          <div class="prow" id="orc-pkm" style="display:none"><span id="orc-pkml"></span><span id="orc-pkmv"></span></div>
+          <div class="prow" id="orc-pst" style="display:none"><span id="orc-pstl"></span><span id="orc-pstv"></span></div>
+          <div class="ptot"><span>Total</span><span id="orc-ptot">R$ 30,00</span></div>
         </div>
-        <div class="ld" id="ldr"><div class="sp"></div><div style="color:var(--mt);font-size:13px">Calculando rota...</div></div>
-        <button class="btn bs" style="width:100%;justify-content:center;margin-top:10px" onclick="calcRoute()">🗺️ Calcular rota e distância</button>
-        <div class="msg merr" id="errmsg"></div>
-        <div class="msg mok" id="okmsg"></div>
+        <div class="ld" id="orc-ld"><div class="sp"></div><div style="color:var(--mt);font-size:13px">Calculando...</div></div>
+        <button class="btn bs" style="width:100%;justify-content:center;margin-top:10px" onclick="calcRoute('orc')">🗺️ Calcular rota</button>
+        <div class="msg merr" id="orc-err"></div>
+        <div class="msg mok" id="orc-ok"></div>
       </div>
-      <button class="btn bp bfull" onclick="gerarOS()">⚡ Gerar Ordem de Serviço</button>
+      <button class="btn bp bfull" onclick="gerarORC()">📄 Gerar Orçamento</button>
     </div>
   </div>
-</div>
 
-<div class="pg" id="pg-ordens">
-  <div class="pt">Ordens de Serviço</div><div class="ps">Histórico de todas as ordens geradas.</div>
-  <div id="osc"><div style="text-align:center;padding:60px;color:var(--mt)">Nenhuma OS gerada ainda.</div></div>
-</div>
-
-<div class="pg" id="pg-clientes">
-  <div class="pt">Clientes</div><div class="ps">Gerencie sua base de clientes.</div>
-  <div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn bp" onclick="showPage('nova')">+ Nova OS</button></div>
-  <div id="clc"><div style="text-align:center;padding:60px;color:var(--mt)">Nenhum cliente cadastrado ainda.</div></div>
-</div>
-
-<div class="pg" id="pg-dash">
-  <div class="pt">Dashboard</div><div class="ps">Resumo da operação.</div>
-  <div class="sr">
-    <div class="sc"><div class="sv" id="sos">0</div><div class="sl">Ordens geradas</div></div>
-    <div class="sc"><div class="sv" id="scli">0</div><div class="sl">Clientes</div></div>
-    <div class="sc"><div class="sv" id="srev">R$ 0</div><div class="sl">Faturamento total</div></div>
-    <div class="sc"><div class="sv" id="skm">0 km</div><div class="sl">KM rodados</div></div>
+  <div style="margin-top:32px">
+    <div class="pt" style="font-size:18px;margin-bottom:16px">Orçamentos gerados</div>
+    <div id="orc-list"><div style="color:var(--mt);font-size:13px;text-align:center;padding:30px 0">Nenhum orçamento ainda.</div></div>
   </div>
-  <div class="card"><div class="ct"><span class="dot"></span>Últimas ordens</div><div id="ros"></div></div>
 </div>
 
+<!-- ===== ORDENS ===== -->
+<div class="pg" id="pg-ordens">
+  <div class="pt">Ordens de Serviço</div>
+  <div class="ps">Ordens abertas a partir de orçamentos aprovados.</div>
+  <div id="os-list"><div style="color:var(--mt);font-size:13px;text-align:center;padding:60px 0">Nenhuma OS ainda. Aprove um orçamento para criar uma OS.</div></div>
+</div>
+
+<!-- ===== RELATÓRIO ===== -->
+<div class="pg" id="pg-relatorio">
+  <div class="pt">Relatório Mensal</div>
+  <div class="ps">Selecione o mês e exporte a planilha de serviços.</div>
+  <div class="card" style="max-width:400px">
+    <div class="ct"><span class="dot"></span>Filtro</div>
+    <div class="fr">
+      <div><label>Mês</label>
+        <select id="rel-mes">
+          <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
+          <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
+          <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
+          <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div><label>Ano</label><input type="number" id="rel-ano" value="2025" min="2024" max="2099"></div>
+    </div>
+    <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="gerarRel()">🔍 Gerar relatório</button>
+  </div>
+  <div id="rel-result"></div>
+</div>
+
+<!-- MODAL -->
 <div class="mo" id="modal">
   <div class="md">
-    <div class="mh"><div class="mt2" id="mtitle">Ordem de Serviço</div><button class="mc" onclick="closeModal()">×</button></div>
-    <div class="mb2"><div class="doc" id="docprev"></div></div>
-    <div class="ma">
-      <button class="btn bs" onclick="toggleDoc()">🔄 Alternar OS / Orçamento</button>
-      <button class="btn bp" onclick="window.print()">🖨️ Imprimir</button>
-    </div>
+    <div class="mh"><div class="mt2" id="modal-title">Documento</div><button class="mc2" onclick="closeModal()">×</button></div>
+    <div class="mb2"><div class="doc" id="doc-preview"></div></div>
+    <div class="ma" id="modal-actions"></div>
   </div>
 </div>
 
 <script>
 const APIKEY='AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg';
-let gc,ds,mr=false,dc=0,dp={},pp=null,smb=0,cos=null,sb=false;
+let gc,ds,mr=false;
+let orcDC=0,orcDP={},orcPP=null,orcMB=0;
 const MBS=['Motoboy 1','Motoboy 2','Motoboy 3'];
 function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch{return d}}
 function sv(k,v){localStorage.setItem(k,JSON.stringify(v))}
-let clients=ld('mc',[]),orders=ld('mo',[]),ctr=ld('mn',1);
+let clients=ld('msb_cli',[]),orcs=ld('msb_orc',[]),orders=ld('msb_os',[]),orcCtr=ld('msb_octr',1),osCtr=ld('msb_osctr',1);
+let currentDoc=null;
 
 window.initMaps=function(){
   gc=new google.maps.Geocoder();
   ds=new google.maps.DistanceMatrixService();
   mr=true;
-  const pi=document.getElementById('pu');
-  const pa=new google.maps.places.Autocomplete(pi,{componentRestrictions:{country:'br'},fields:['formatted_address','geometry']});
-  pa.addListener('place_changed',()=>{const p=pa.getPlace();if(p.geometry)pp={lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),formatted:p.formatted_address,original:pi.value};});
-  pi.addEventListener('input',()=>{pp=null;});
-  addDel();addDel();
-  renderOrders();renderClients();updDash();
+  initAC(document.getElementById('orc-pickup'),'orc-pickup');
+  addDel('orc');addDel('orc');
+  render();
+  // set current month/year
+  const now=new Date();
+  document.getElementById('rel-mes').value=now.getMonth()+1;
+  document.getElementById('rel-ano').value=now.getFullYear();
 };
+
+function initAC(input,key){
+  if(!mr)return;
+  const ac=new google.maps.places.Autocomplete(input,{componentRestrictions:{country:'br'},fields:['formatted_address','geometry']});
+  ac.addListener('place_changed',()=>{
+    const p=ac.getPlace();
+    if(p.geometry){
+      if(key==='orc-pickup'){orcPP={lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),formatted:p.formatted_address,original:input.value};}
+      else{orcDP[key]={lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),formatted:p.formatted_address,original:input.value};}
+    }
+  });
+  input.addEventListener('input',()=>{if(key==='orc-pickup')orcPP=null;else delete orcDP[key];});
+}
 
 function showPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('pg-'+id).classList.add('active');
-  const idx=['nova','ordens','clientes','dash'].indexOf(id);
+  const idx=['clientes','orcamentos','ordens','relatorio'].indexOf(id);
   document.querySelectorAll('.nb')[idx].classList.add('active');
-  if(id==='dash')updDash();
-  if(id==='ordens')renderOrders();
-  if(id==='clientes')renderClients();
+  render();
 }
 
-function selMB(id){smb=id;document.querySelectorAll('.mbo').forEach(o=>o.classList.remove('active'));document.querySelector('.mbo[data-id="'+id+'"]').classList.add('active');}
+function render(){renderCli();renderOrcs();renderOS();}
 
-function addDel(){
-  const list=document.getElementById('dlist');
-  const id=dc++;const key='d'+id;
-  const row=document.createElement('div');row.className='ar';row.dataset.key=key;
-  const num=document.createElement('div');num.className='an';num.textContent=list.children.length+1;
-  const inp=document.createElement('input');inp.type='text';inp.placeholder='Endereço de entrega...';inp.id='di'+key;inp.style.flex='1';
-  inp.addEventListener('input',()=>{delete dp[key];});
-  const rm=document.createElement('button');rm.className='brm';rm.innerHTML='×';
-  rm.onclick=()=>{row.remove();delete dp[key];renum();calcP();};
-  row.appendChild(num);row.appendChild(inp);row.appendChild(rm);
-  list.appendChild(row);
-  setTimeout(()=>{
-    const ac=new google.maps.places.Autocomplete(inp,{componentRestrictions:{country:'br'},fields:['formatted_address','geometry']});
-    ac.addListener('place_changed',()=>{const p=ac.getPlace();if(p.geometry)dp[key]={lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),formatted:p.formatted_address,original:inp.value};});
-  },0);
-  renum();calcP();
+// ===== CLIENTS =====
+function saveCli(){
+  const name=document.getElementById('cli-name').value.trim();
+  if(!name){showMsg('cli-err','Informe o nome do cliente.');return;}
+  const ei=clients.findIndex(c=>c.name.toLowerCase()===name.toLowerCase());
+  const cl={id:ei>=0?clients[ei].id:Date.now(),name,doc:document.getElementById('cli-doc').value.trim(),addr:document.getElementById('cli-addr').value.trim(),phone:document.getElementById('cli-phone').value.trim(),email:document.getElementById('cli-email').value.trim()};
+  if(ei>=0)clients[ei]=cl;else clients.push(cl);
+  sv('msb_cli',clients);showMsg('cli-ok','Cliente salvo!');renderCli();
+  document.getElementById('cli-name').value='';document.getElementById('cli-doc').value='';
+  document.getElementById('cli-addr').value='';document.getElementById('cli-phone').value='';document.getElementById('cli-email').value='';
 }
 
-function renum(){document.querySelectorAll('#dlist .ar').forEach((r,i)=>r.querySelector('.an').textContent=i+1);}
-
-function getDels(){
-  return Array.from(document.querySelectorAll('#dlist .ar')).map(r=>{
-    const k=r.dataset.key,v=document.getElementById('di'+k).value.trim();
-    return v.length>3?{text:v,key:k,place:dp[k]||null}:null;
-  }).filter(Boolean);
+function renderCli(){
+  const c=document.getElementById('cli-list');
+  if(!clients.length){c.innerHTML='<div style="color:var(--mt);font-size:13px;text-align:center;padding:30px 0">Nenhum cliente ainda.</div>';return;}
+  c.innerHTML=clients.map((cl,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--ac);flex-shrink:0">${cl.name.charAt(0).toUpperCase()}</div>
+      <div style="flex:1"><div style="font-weight:500;font-size:13px">${cl.name}</div><div style="font-size:11px;color:var(--mt)">${[cl.doc,cl.phone,cl.email].filter(Boolean).join(' · ')||'Sem dados'}</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bs" style="font-size:11px;padding:5px 10px" onclick="editCli(${i})">✏️</button>
+        <button class="btn bdanger" style="font-size:11px;padding:5px 10px" onclick="delCli(${i})">✕</button>
+      </div>
+    </div>`).join('');
 }
 
-function searchCli(q){
-  const dd=document.getElementById('csd');
+function editCli(i){
+  const c=clients[i];
+  document.getElementById('cli-name').value=c.name||'';
+  document.getElementById('cli-doc').value=c.doc||'';
+  document.getElementById('cli-addr').value=c.addr||'';
+  document.getElementById('cli-phone').value=c.phone||'';
+  document.getElementById('cli-email').value=c.email||'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function delCli(i){if(!confirm('Remover "'+clients[i].name+'"?'))return;clients.splice(i,1);sv('msb_cli',clients);renderCli();}
+
+// ===== CLIENT SEARCH =====
+function searchCli(ctx,q){
+  const dd=document.getElementById(ctx+'-csd');
   if(!q.trim()){dd.style.display='none';return;}
   const res=clients.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||(c.doc&&c.doc.includes(q)));
   if(!res.length){dd.style.display='none';return;}
-  dd.innerHTML=res.map(c=>`<div class="cso" onclick="fillCli(${clients.indexOf(c)})"><div class="con">${c.name}</div><div class="com">${[c.doc,c.phone].filter(Boolean).join(' · ')||'Sem dados'}</div></div>`).join('');
+  dd.innerHTML=res.map(c=>`<div class="cso" onclick="fillCliFields('${ctx}',${clients.indexOf(c)})"><div class="con">${c.name}</div><div class="com">${[c.doc,c.phone].filter(Boolean).join(' · ')||'Sem dados'}</div></div>`).join('');
   dd.style.display='block';
 }
+document.addEventListener('click',e=>{document.querySelectorAll('.csd').forEach(d=>{if(!e.target.closest('.csw'))d.style.display='none';});});
 
-document.addEventListener('click',e=>{if(!e.target.closest('.csw'))document.getElementById('csd').style.display='none';});
-
-function fillCli(i){
+function fillCliFields(ctx,i){
   const c=clients[i];
-  document.getElementById('cn').value=c.name||'';
-  document.getElementById('cd').value=c.doc||'';
-  document.getElementById('cp').value=c.phone||'';
-  document.getElementById('ce').value=c.email||'';
-  document.getElementById('csearch').value=c.name||'';
-  document.getElementById('csd').style.display='none';
+  document.getElementById(ctx+'-cname').value=c.name||'';
+  document.getElementById(ctx+'-cdoc').value=c.doc||'';
+  document.getElementById(ctx+'-caddr').value=c.addr||'';
+  document.getElementById(ctx+'-cphone').value=c.phone||'';
+  document.getElementById(ctx+'-cemail').value=c.email||'';
+  document.getElementById(ctx+'-csearch').value=c.name||'';
+  document.getElementById(ctx+'-csd').style.display='none';
 }
 
-function saveCli(){
-  const name=document.getElementById('cn').value.trim();
-  if(!name){showMsg('err','Informe o nome do cliente.');return;}
-  const ei=clients.findIndex(c=>c.name.toLowerCase()===name.toLowerCase());
-  const cl={id:ei>=0?clients[ei].id:Date.now(),name,doc:document.getElementById('cd').value.trim(),phone:document.getElementById('cp').value.trim(),email:document.getElementById('ce').value.trim()};
-  if(ei>=0)clients[ei]=cl;else clients.push(cl);
-  sv('mc',clients);showMsg('ok','Cliente "'+name+'" salvo!');renderClients();
+// ===== MOTOBOY =====
+function selMB(ctx,id){
+  if(ctx==='orc')orcMB=id;
+  document.querySelectorAll('#'+ctx+'-mbs .mbo').forEach(o=>o.classList.remove('active'));
+  document.querySelector('#'+ctx+'-mbs .mbo[data-id="'+id+'"]').classList.add('active');
 }
 
-function renderClients(){
-  const c=document.getElementById('clc');
-  if(!clients.length){c.innerHTML='<div style="text-align:center;padding:60px;color:var(--mt)">Nenhum cliente cadastrado ainda.</div>';return;}
-  c.innerHTML=clients.map((cl,i)=>`<div class="clc"><div class="cla">${cl.name.charAt(0).toUpperCase()}</div><div class="clni"><div class="clnm">${cl.name}</div><div class="clmt">${[cl.doc,cl.phone,cl.email].filter(Boolean).join(' · ')||'Sem dados'}</div></div><div style="display:flex;gap:7px"><button class="btn bs" style="font-size:12px;padding:6px 11px" onclick="fillCli(${i});showPage('nova')">Nova OS</button><button class="btn" style="font-size:12px;padding:6px 11px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--rd)" onclick="delCli(${i})">Remover</button></div></div>`).join('');
+// ===== DELIVERIES =====
+function addDel(ctx){
+  const list=document.getElementById(ctx+'-dlist');
+  const id=orcDC++;const key='d'+id;
+  const row=document.createElement('div');row.className='ar';row.dataset.key=key;
+  const num=document.createElement('div');num.className='an';num.textContent=list.children.length+1;
+  const inp=document.createElement('input');inp.type='text';inp.placeholder='Endereço de entrega...';inp.id='di'+key;inp.style.flex='1';
+  inp.addEventListener('input',()=>{delete orcDP[key];});
+  const rm=document.createElement('button');rm.className='brm';rm.innerHTML='×';
+  rm.onclick=()=>{row.remove();delete orcDP[key];renum(ctx);calcP(ctx);};
+  row.appendChild(num);row.appendChild(inp);row.appendChild(rm);
+  list.appendChild(row);
+  setTimeout(()=>initAC(inp,key),0);
+  renum(ctx);calcP(ctx);
 }
 
-function delCli(i){if(!confirm('Remover "'+clients[i].name+'"?'))return;clients.splice(i,1);sv('mc',clients);renderClients();}
+function renum(ctx){document.querySelectorAll('#'+ctx+'-dlist .ar').forEach((r,i)=>r.querySelector('.an').textContent=i+1);}
 
-function calcP(km){
-  const rk=km!==undefined?km:parseFloat(document.getElementById('kmi').value)||0;
-  const dels=getDels();const ex=Math.max(0,dels.length-1);
+function getDels(ctx){
+  return Array.from(document.querySelectorAll('#'+ctx+'-dlist .ar')).map(r=>{
+    const k=r.dataset.key,v=document.getElementById('di'+k).value.trim();
+    return v.length>3?{text:v,key:k,place:orcDP[k]||null}:null;
+  }).filter(Boolean);
+}
+
+// ===== PRICE =====
+function calcP(ctx){
+  const rk=parseFloat(document.getElementById(ctx+'-km').value)||0;
+  const dels=getDels(ctx);const ex=Math.max(0,dels.length-1);
   let tot=30,ke=0,kr=0,se=0;
   if(rk>10){ke=rk-10;kr=rk<=20?2:3;tot+=ke*kr;}
   if(ex>0){se=ex*5;tot+=se;}
-  const pk=document.getElementById('pkm'),ps=document.getElementById('pst');
-  if(ke>0){document.getElementById('pkml').textContent='+'+ke.toFixed(1)+' km excedentes × R$ '+kr+',00/km';document.getElementById('pkmv').textContent='R$ '+(ke*kr).toFixed(2);pk.style.display='flex';}else pk.style.display='none';
-  if(ex>0){document.getElementById('pstl').textContent=ex+' parada(s) adicional × R$ 5,00';document.getElementById('pstv').textContent='R$ '+se.toFixed(2);ps.style.display='flex';}else ps.style.display='none';
-  document.getElementById('ptot').textContent='R$ '+tot.toFixed(2);
+  const pk=document.getElementById(ctx+'-pkm'),ps2=document.getElementById(ctx+'-pst');
+  if(pk){
+    if(ke>0){document.getElementById(ctx+'-pkml').textContent='+'+ke.toFixed(1)+' km excedentes × R$ '+kr+',00/km';document.getElementById(ctx+'-pkmv').textContent='R$ '+(ke*kr).toFixed(2);pk.style.display='flex';}else pk.style.display='none';
+    if(ex>0){document.getElementById(ctx+'-pstl').textContent=ex+' parada(s) adicional × R$ 5,00';document.getElementById(ctx+'-pstv').textContent='R$ '+se.toFixed(2);ps2.style.display='flex';}else ps2.style.display='none';
+    document.getElementById(ctx+'-ptot').textContent='R$ '+tot.toFixed(2);
+  }
   return{total:tot,kmEx:ke,kmRate:kr,extra:ex,stEx:se,rawKm:rk};
 }
 
+// ===== ROUTE =====
 function geoA(addr,place){
   if(place)return Promise.resolve(place);
   return new Promise(res=>gc.geocode({address:addr,componentRestrictions:{country:'BR'}},(r,s)=>res(s==='OK'&&r.length?{lat:r[0].geometry.location.lat(),lng:r[0].geometry.location.lng(),formatted:r[0].formatted_address,original:addr}:null)));
 }
 
-async function calcRoute(){
-  if(!mr){showMsg('err','Google Maps ainda carregando.');return;}
-  const pt=document.getElementById('pu').value.trim();
-  if(!pt){showMsg('err','Informe o endereço de coleta.');return;}
-  const dels=getDels();if(!dels.length){showMsg('err','Adicione pelo menos um endereço de entrega.');return;}
-  document.getElementById('ldr').style.display='block';
+async function calcRoute(ctx){
+  if(!mr){showMsg(ctx+'-err','Google Maps ainda carregando.');return;}
+  const pt=document.getElementById(ctx+'-pickup').value.trim();
+  if(!pt){showMsg(ctx+'-err','Informe o endereço de coleta.');return;}
+  const dels=getDels(ctx);if(!dels.length){showMsg(ctx+'-err','Adicione pelo menos um endereço de entrega.');return;}
+  document.getElementById(ctx+'-ld').style.display='block';
   try{
-    const pu=await geoA(pt,pp);if(!pu){showMsg('err','Endereço de coleta não encontrado.');return;}pp=pu;
+    const pu=await geoA(pt,orcPP);if(!pu){showMsg(ctx+'-err','Endereço de coleta não encontrado.');return;}orcPP=pu;
     const res=[];for(const d of dels){const g=await geoA(d.text,d.place);if(g)res.push(g);}
-    if(!res.length){showMsg('err','Nenhum endereço encontrado.');return;}
+    if(!res.length){showMsg(ctx+'-err','Nenhum endereço encontrado.');return;}
     const ord=optO(pu,res);const pts=[pu,...ord];
     const mx=await new Promise(r=>ds.getDistanceMatrix({origins:pts.slice(0,-1).map(p=>new google.maps.LatLng(p.lat,p.lng)),destinations:pts.slice(1).map(p=>new google.maps.LatLng(p.lat,p.lng)),travelMode:google.maps.TravelMode.DRIVING},(rs,s)=>r(s==='OK'?rs:null)));
     let td=0;if(mx)mx.rows.forEach((r,i)=>{const e=r.elements[i];if(e&&e.status==='OK')td+=e.distance.value;});
-    const km=td/1000;document.getElementById('kmi').value=km.toFixed(1);calcP(km);showMsg('ok','Rota calculada: '+km.toFixed(1)+' km. Preço atualizado!');
-  }catch(e){showMsg('err','Erro ao calcular rota.');console.error(e);}
-  finally{document.getElementById('ldr').style.display='none';}
+    const km=td/1000;document.getElementById(ctx+'-km').value=km.toFixed(1);calcP(ctx);
+    showMsg(ctx+'-ok','Rota calculada: '+km.toFixed(1)+' km.');
+  }catch(e){showMsg(ctx+'-err','Erro ao calcular rota.');console.error(e);}
+  finally{document.getElementById(ctx+'-ld').style.display='none';}
 }
 
 function optO(s,stops){const r=[...stops],o=[];let c=s;while(r.length){let mi=0,md=Infinity;r.forEach((x,i)=>{const d=Math.pow(x.lat-c.lat,2)+Math.pow(x.lng-c.lng,2);if(d<md){md=d;mi=i;}});o.push(r[mi]);c=r[mi];r.splice(mi,1);}return o;}
 
-function gerarOS(){
-  const name=document.getElementById('cn').value.trim();
-  if(!name){showMsg('err','Informe o nome do cliente.');return;}
-  const pu=document.getElementById('pu').value.trim();
-  if(!pu){showMsg('err','Informe o endereço de coleta.');return;}
-  const dels=getDels();if(!dels.length){showMsg('err','Adicione pelo menos um endereço de entrega.');return;}
-  const price=calcP();const km=parseFloat(document.getElementById('kmi').value)||0;
-  const num=String(ctr).padStart(5,'0');
-  const os={id:Date.now(),num,date:new Date().toLocaleString('pt-BR'),
-    client:{name,doc:document.getElementById('cd').value.trim(),phone:document.getElementById('cp').value.trim(),email:document.getElementById('ce').value.trim()},
-    motoboy:MBS[smb],pickup:{address:pu,obs:document.getElementById('puobs').value.trim()},
-    deliveries:dels.map(d=>({address:d.text})),km,price,status:'pending'};
-  orders.unshift(os);ctr++;sv('mo',orders);sv('mn',ctr);
-  cos=os;sb=false;openModal(os,false);renderOrders();updDash();
+// ===== GENERATE ORC =====
+function gerarORC(){
+  const cname=document.getElementById('orc-cname').value.trim();
+  if(!cname){showMsg('orc-err','Informe o nome do cliente.');return;}
+  const pu=document.getElementById('orc-pickup').value.trim();
+  if(!pu){showMsg('orc-err','Informe o endereço de coleta.');return;}
+  const dels=getDels('orc');
+  if(!dels.length){showMsg('orc-err','Adicione pelo menos um endereço de entrega.');return;}
+  const price=calcP('orc');
+  const num='ORC-'+String(orcCtr).padStart(5,'0');
+  const orc={
+    id:Date.now(),num,
+    date:new Date().toLocaleString('pt-BR'),
+    client:{name:cname,doc:document.getElementById('orc-cdoc').value.trim(),addr:document.getElementById('orc-caddr').value.trim(),phone:document.getElementById('orc-cphone').value.trim(),email:document.getElementById('orc-cemail').value.trim()},
+    motoboy:MBS[orcMB],
+    pickup:{address:pu,obs:document.getElementById('orc-pickup-obs').value.trim()},
+    deliveries:dels.map(d=>({address:d.text})),
+    price,status:'pendente'
+  };
+  orcs.unshift(orc);orcCtr++;
+  sv('msb_orc',orcs);sv('msb_octr',orcCtr);
+  showMsg('orc-ok','Orçamento '+num+' gerado!');
+  renderOrcs();
+  setTimeout(()=>openDoc(orc,'orc'),300);
 }
 
-function openModal(os,ib){
-  cos=os;sb=ib;
-  document.getElementById('mtitle').textContent=(ib?'Orçamento':'Ordem de Serviço')+' #'+os.num;
-  document.getElementById('docprev').innerHTML=buildDoc(os,ib);
+function renderOrcs(){
+  const c=document.getElementById('orc-list');
+  if(!orcs.length){c.innerHTML='<div style="color:var(--mt);font-size:13px;text-align:center;padding:30px 0">Nenhum orçamento ainda.</div>';return;}
+  c.innerHTML=orcs.map((o,i)=>`
+    <div class="row-card">
+      <div class="row-num">${o.num}</div>
+      <div class="row-info"><div class="row-name">${o.client.name}</div><div class="row-meta">${o.date} · ${o.motoboy} · ${o.deliveries.length} entrega(s)</div></div>
+      <span class="badge ${o.status==='aprovado'?'b-aprov':'b-pend'}">${o.status==='aprovado'?'✓ Aprovado':'⏳ Pendente'}</span>
+      <div class="row-price">R$ ${o.price.total.toFixed(2)}</div>
+      <div class="row-actions">
+        <button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="openDoc(orcs[${i}],'orc')">Ver</button>
+        <button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="downloadOrcPDF(${i})">⬇️ PDF</button>
+        ${o.status!=='aprovado'?`<button class="btn bgreen" style="font-size:12px;padding:6px 10px" onclick="aprovarORC(${i})">✓ Aprovar → OS</button>`:''}
+        <button class="btn bdanger" style="font-size:12px;padding:6px 10px" onclick="delOrc(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function delOrc(i){if(!confirm('Remover orçamento?'))return;orcs.splice(i,1);sv('msb_orc',orcs);renderOrcs();}
+
+// ===== APPROVE ORC → OS =====
+function aprovarORC(i){
+  const orc=orcs[i];
+  if(!confirm('Aprovar orçamento '+orc.num+' e criar Ordem de Serviço?'))return;
+  orcs[i].status='aprovado';sv('msb_orc',orcs);
+  const osNum='OS-'+String(osCtr).padStart(5,'0');
+  const now=new Date();
+  const os={
+    id:Date.now(),num:osNum,orcNum:orc.num,
+    client:orc.client,motoboy:orc.motoboy,
+    pickup:orc.pickup,deliveries:orc.deliveries,price:orc.price,
+    abertura:now.toLocaleString('pt-BR'),
+    fechamento:null,status:'aberta',obs:''
+  };
+  orders.unshift(os);osCtr++;
+  sv('msb_os',orders);sv('msb_osctr',osCtr);
+  renderOrcs();renderOS();
+  showMsg('orc-ok','OS '+osNum+' criada!');
+  showPage('ordens');
+}
+
+// ===== ORDERS =====
+function renderOS(){
+  const c=document.getElementById('os-list');
+  if(!orders.length){c.innerHTML='<div style="color:var(--mt);font-size:13px;text-align:center;padding:60px 0">Nenhuma OS ainda. Aprove um orçamento para criar uma OS.</div>';return;}
+  c.innerHTML=orders.map((o,i)=>`
+    <div class="row-card">
+      <div>
+        <div class="row-num">${o.num}</div>
+        <div style="font-size:10px;color:var(--mt)">← ${o.orcNum}</div>
+      </div>
+      <div class="row-info">
+        <div class="row-name">${o.client.name}</div>
+        <div class="row-meta">Aberta: ${o.abertura}${o.fechamento?' · Fechada: '+o.fechamento:''}</div>
+        <div class="row-meta">${o.motoboy} · ${o.deliveries.length} entrega(s)</div>
+      </div>
+      <span class="badge ${o.status==='fechada'?'b-closed':'b-open'}">${o.status==='fechada'?'🔒 Fechada':'🟢 Aberta'}</span>
+      <div class="row-price">R$ ${o.price.total.toFixed(2)}</div>
+      <div class="row-actions">
+        <button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="openDoc(orders[${i}],'os')">Ver OS</button>
+        ${o.status==='aberta'?`<button class="btn bdanger" style="font-size:12px;padding:6px 10px" onclick="fecharOS(${i})">🔒 Fechar OS</button>`:`<button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="reabrirOS(${i})">↩ Reabrir</button>`}
+      </div>
+    </div>`).join('');
+}
+
+function fecharOS(i){
+  if(!confirm('Fechar a OS '+orders[i].num+'? Isso registra data e hora de fechamento.'))return;
+  orders[i].fechamento=new Date().toLocaleString('pt-BR');
+  orders[i].status='fechada';
+  sv('msb_os',orders);renderOS();
+}
+
+function reabrirOS(i){
+  if(!confirm('Reabrir a OS '+orders[i].num+'?'))return;
+  orders[i].fechamento=null;orders[i].status='aberta';
+  sv('msb_os',orders);renderOS();
+}
+
+// ===== DOCUMENTS =====
+function openDoc(doc,type){
+  currentDoc={doc,type};
+  document.getElementById('modal-title').textContent=type==='orc'?'Orçamento '+doc.num:'Ordem de Serviço '+doc.num;
+  document.getElementById('doc-preview').innerHTML=buildDoc(doc,type);
+  const acts=document.getElementById('modal-actions');
+  if(type==='orc'){
+    acts.innerHTML=`<button class="btn bs" onclick="downloadOrcPDFFromModal()">⬇️ Baixar PDF</button><button class="btn bp" onclick="window.print()">🖨️ Imprimir</button>`;
+  }else{
+    acts.innerHTML=`<button class="btn bp" onclick="window.print()">🖨️ Imprimir OS</button>`;
+  }
   document.getElementById('modal').classList.add('open');
 }
+
 function closeModal(){document.getElementById('modal').classList.remove('open');}
-function toggleDoc(){if(cos)openModal(cos,!sb);}
+function downloadOrcPDFFromModal(){if(currentDoc)downloadOrcPDFObj(currentDoc.doc);}
+function downloadOrcPDF(i){downloadOrcPDFObj(orcs[i]);}
 
-function buildDoc(os,ib){
-  const p=os.price;
-  const stops=os.deliveries.map((d,i)=>`<div class="dsi"><div class="dsn">${i+1}</div><div style="font-size:13px">${d.address}</div></div>`).join('');
-  const pr=`<tr><td>Mínimo (até 10km + coleta/entrega)</td><td>R$ 30,00</td></tr>${p.kmEx>0?`<tr><td>+${p.kmEx.toFixed(1)} km × R$ ${p.kmRate},00/km</td><td>R$ ${(p.kmEx*p.kmRate).toFixed(2)}</td></tr>`:''} ${p.extra>0?`<tr><td>${p.extra} parada(s) adicional × R$ 5,00</td><td>R$ ${p.stEx.toFixed(2)}</td></tr>`:''}`;
-  return `<div class="dh"><div><div class="dco">Moto Service <span>BH</span></div><div style="font-size:11px;color:#888;margin-top:3px">Serviço de Entregas por Motoboy</div></div><div style="text-align:right"><div class="dbg">${ib?'ORÇAMENTO':'ORDEM DE SERVIÇO'}</div><div class="dn">#${os.num} · ${os.date}</div></div></div>
-  <div class="ds"><div class="dst">Cliente</div><div class="dr"><span class="dl">Nome</span><span class="dv">${os.client.name}</span></div>${os.client.doc?`<div class="dr"><span class="dl">CPF/CNPJ</span><span class="dv">${os.client.doc}</span></div>`:''} ${os.client.phone?`<div class="dr"><span class="dl">Telefone</span><span class="dv">${os.client.phone}</span></div>`:''} ${os.client.email?`<div class="dr"><span class="dl">E-mail</span><span class="dv">${os.client.email}</span></div>`:''}</div>
-  <div class="ds"><div class="dst">Coleta</div><div class="dr"><span class="dl">Endereço</span><span class="dv">${os.pickup.address}</span></div>${os.pickup.obs?`<div class="dr"><span class="dl">Obs.</span><span class="dv">${os.pickup.obs}</span></div>`:''}</div>
-  <div class="ds"><div class="dst">Entregas (${os.deliveries.length})</div><div class="dsp">${stops}</div></div>
-  <div class="ds"><div class="dst">Motoboy</div><div class="dr"><span class="dl">Responsável</span><span class="dv">${os.motoboy}</span></div><div class="dr"><span class="dl">Distância</span><span class="dv">${os.km.toFixed(1)} km</span></div></div>
-  <div class="ds"><div class="dst">Valores</div><table class="dpt">${pr}</table><div class="dtot"><span>Total</span><span>R$ ${p.total.toFixed(2)}</span></div></div>
-  ${!ib?`<div class="dsg"><div class="dsl"><div>Assinatura do cliente</div></div><div class="dsl"><div>Moto Service BH</div></div></div>`:''}
-  <div class="dft">Moto Service BH · Serviço de Entregas por Motoboy · ${new Date().getFullYear()}</div>`;
+function downloadOrcPDFObj(orc){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const W=210,margin=20,cw=W-margin*2;
+  let y=margin;
+
+  // Header
+  doc.setFillColor(17,17,17);doc.rect(margin,y,cw,14,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(245,200,66);
+  doc.text('MOTO SERVICE BH',margin+4,y+9);
+  doc.setFontSize(9);doc.setTextColor(255,255,255);
+  doc.text('ORÇAMENTO',W-margin-4,y+9,{align:'right'});
+  y+=20;
+
+  doc.setTextColor(17,17,17);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Nº: '+orc.num+'  |  Data: '+orc.date,margin,y);
+  y+=10;
+
+  // Client
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(100,100,100);
+  doc.text('CLIENTE',margin,y);y+=5;
+  doc.setDrawColor(200,200,200);doc.line(margin,y,W-margin,y);y+=4;
+  doc.setFont('helvetica','normal');doc.setTextColor(17,17,17);
+  const clines=[
+    ['Nome',orc.client.name],
+    orc.client.doc?['CPF/CNPJ',orc.client.doc]:null,
+    orc.client.addr?['Endereço',orc.client.addr]:null,
+    orc.client.phone?['Telefone',orc.client.phone]:null,
+    orc.client.email?['E-mail',orc.client.email]:null,
+  ].filter(Boolean);
+  clines.forEach(([l,v])=>{doc.setFont('helvetica','bold');doc.text(l+':',margin,y);doc.setFont('helvetica','normal');doc.text(v,margin+28,y);y+=5;});
+  y+=4;
+
+  // Coleta
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(100,100,100);
+  doc.text('ENDEREÇO DE COLETA',margin,y);y+=5;
+  doc.setDrawColor(200,200,200);doc.line(margin,y,W-margin,y);y+=4;
+  doc.setFont('helvetica','normal');doc.setTextColor(17,17,17);
+  doc.text(orc.pickup.address,margin,y);y+=5;
+  if(orc.pickup.obs){doc.setTextColor(120,120,120);doc.text('Obs: '+orc.pickup.obs,margin,y);y+=5;doc.setTextColor(17,17,17);}
+  y+=4;
+
+  // Entregas
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(100,100,100);
+  doc.text('ENDEREÇOS DE ENTREGA',margin,y);y+=5;
+  doc.setDrawColor(200,200,200);doc.line(margin,y,W-margin,y);y+=4;
+  doc.setFont('helvetica','normal');doc.setTextColor(17,17,17);
+  orc.deliveries.forEach((d,i)=>{
+    doc.setFillColor(240,240,240);doc.circle(margin+3,y-1,3,'F');
+    doc.setFont('helvetica','bold');doc.setTextColor(17,17,17);doc.text(String(i+1),margin+3,y,{align:'center'});
+    doc.setFont('helvetica','normal');doc.text(d.address,margin+8,y);y+=5;
+  });
+  y+=6;
+
+  // Value box
+  doc.setFillColor(245,200,66);doc.rect(margin,y,cw,14,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(17,17,17);
+  doc.text('VALOR TOTAL DO SERVIÇO',margin+4,y+9);
+  doc.setFontSize(14);doc.text('R$ '+orc.price.total.toFixed(2),W-margin-4,y+9,{align:'right'});
+  y+=20;
+
+  // Signature
+  y+=10;
+  doc.setDrawColor(150,150,150);
+  doc.line(margin,y,margin+70,y);doc.line(W-margin-70,y,W-margin,y);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(120,120,120);
+  doc.text('Assinatura do cliente',margin+35,y+4,{align:'center'});
+  doc.text('Moto Service BH',W-margin-35,y+4,{align:'center'});
+
+  // Footer
+  doc.setFontSize(7);doc.setTextColor(180,180,180);
+  doc.text('Moto Service BH · Serviço de Entregas por Motoboy · '+new Date().getFullYear(),W/2,285,{align:'center'});
+
+  doc.save('Orcamento-'+orc.num+'.pdf');
 }
 
-function renderOrders(){
-  const c=document.getElementById('osc');
-  if(!orders.length){c.innerHTML='<div style="text-align:center;padding:60px;color:var(--mt)">Nenhuma OS gerada ainda.</div>';return;}
-  c.innerHTML='<div class="osl">'+orders.map((os,i)=>`<div class="osc"><div class="osn">#${os.num}</div><div class="osi"><div class="oscl">${os.client.name}</div><div class="osm">${os.date} · ${os.motoboy} · ${os.deliveries.length} entrega(s) · ${os.km.toFixed(1)} km</div></div><span class="ost ${os.status==='done'?'sp2':'sp1'}">${os.status==='done'?'✓ Concluído':'⏳ Pendente'}</span><div class="osp">R$ ${os.price.total.toFixed(2)}</div><div class="osa"><button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="openModal(orders[${i}],false)">Ver OS</button><button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="openModal(orders[${i}],true)">Orçamento</button><button class="btn bs" style="font-size:12px;padding:6px 10px" onclick="togSt(${i})">${os.status==='done'?'↩ Reabrir':'✓ Concluir'}</button></div></div>`).join('')+'</div>';
+function buildDoc(doc,type){
+  if(type==='orc'){
+    const p=doc.price;
+    const stops=doc.deliveries.map((d,i)=>`<div class="dsi"><div class="dsn">${i+1}</div><div style="font-size:13px">${d.address}</div></div>`).join('');
+    return `
+      <div class="dh">
+        <div><div class="dco">Moto Service <span>BH</span></div><div style="font-size:11px;color:#888;margin-top:3px">Serviço de Entregas por Motoboy</div></div>
+        <div style="text-align:right"><div class="dbg">ORÇAMENTO</div><div class="dnum">${doc.num} · ${doc.date}</div></div>
+      </div>
+      <div class="ds"><div class="dst">Cliente</div>
+        <div class="dr"><span class="dl">Nome</span><span class="dv">${doc.client.name}</span></div>
+        ${doc.client.doc?`<div class="dr"><span class="dl">CPF/CNPJ</span><span class="dv">${doc.client.doc}</span></div>`:''}
+        ${doc.client.addr?`<div class="dr"><span class="dl">Endereço</span><span class="dv">${doc.client.addr}</span></div>`:''}
+        ${doc.client.phone?`<div class="dr"><span class="dl">Telefone</span><span class="dv">${doc.client.phone}</span></div>`:''}
+        ${doc.client.email?`<div class="dr"><span class="dl">E-mail</span><span class="dv">${doc.client.email}</span></div>`:''}
+      </div>
+      <div class="ds"><div class="dst">Coleta</div>
+        <div class="dr"><span class="dl">Endereço</span><span class="dv">${doc.pickup.address}</span></div>
+        ${doc.pickup.obs?`<div class="dr"><span class="dl">Obs.</span><span class="dv">${doc.pickup.obs}</span></div>`:''}
+      </div>
+      <div class="ds"><div class="dst">Entregas (${doc.deliveries.length})</div><div class="dsp">${stops}</div></div>
+      <div class="dtot"><span class="dtot-label">Valor total do serviço</span><span class="dtot-val">R$ ${p.total.toFixed(2)}</span></div>
+      <div class="dsg" style="margin-top:24px"><div class="dsl"><div>Assinatura do cliente</div></div><div class="dsl"><div>Moto Service BH</div></div></div>
+      <div class="dft">Moto Service BH · Serviço de Entregas por Motoboy · ${new Date().getFullYear()}</div>`;
+  } else {
+    const p=doc.price;
+    const stops=doc.deliveries.map((d,i)=>`<div class="dsi"><div class="dsn">${i+1}</div><div style="font-size:13px">${d.address}</div></div>`).join('');
+    const pr=`<tr><td>Mínimo (até 10km + coleta/entrega)</td><td style="text-align:right;font-weight:500">R$ 30,00</td></tr>${p.kmEx>0?`<tr><td>+${p.kmEx.toFixed(1)} km × R$ ${p.kmRate},00/km</td><td style="text-align:right;font-weight:500">R$ ${(p.kmEx*p.kmRate).toFixed(2)}</td></tr>`:''} ${p.extra>0?`<tr><td>${p.extra} parada(s) adicional × R$ 5,00</td><td style="text-align:right;font-weight:500">R$ ${p.stEx.toFixed(2)}</td></tr>`:''}`;
+    return `
+      <div class="dh">
+        <div><div class="dco">Moto Service <span>BH</span></div><div style="font-size:11px;color:#888;margin-top:3px">Serviço de Entregas por Motoboy</div></div>
+        <div style="text-align:right"><div class="dbg">ORDEM DE SERVIÇO</div><div class="dnum">${doc.num} · Orç: ${doc.orcNum}</div></div>
+      </div>
+      <div class="ds"><div class="dst">Cliente</div>
+        <div class="dr"><span class="dl">Nome</span><span class="dv">${doc.client.name}</span></div>
+        ${doc.client.doc?`<div class="dr"><span class="dl">CPF/CNPJ</span><span class="dv">${doc.client.doc}</span></div>`:''}
+        ${doc.client.addr?`<div class="dr"><span class="dl">Endereço</span><span class="dv">${doc.client.addr}</span></div>`:''}
+        ${doc.client.phone?`<div class="dr"><span class="dl">Telefone</span><span class="dv">${doc.client.phone}</span></div>`:''}
+        ${doc.client.email?`<div class="dr"><span class="dl">E-mail</span><span class="dv">${doc.client.email}</span></div>`:''}
+      </div>
+      <div class="ds"><div class="dst">Coleta</div>
+        <div class="dr"><span class="dl">Endereço</span><span class="dv">${doc.pickup.address}</span></div>
+        ${doc.pickup.obs?`<div class="dr"><span class="dl">Obs.</span><span class="dv">${doc.pickup.obs}</span></div>`:''}
+      </div>
+      <div class="ds"><div class="dst">Entregas (${doc.deliveries.length})</div><div class="dsp">${stops}</div></div>
+      <div class="ds"><div class="dst">Execução</div>
+        <div class="dr"><span class="dl">Motoboy</span><span class="dv">${doc.motoboy}</span></div>
+        <div class="dr"><span class="dl">Abertura</span><span class="dv">${doc.abertura}</span></div>
+        ${doc.fechamento?`<div class="dr"><span class="dl">Fechamento</span><span class="dv">${doc.fechamento}</span></div>`:''}
+        <div class="dr"><span class="dl">Status</span><span class="dv">${doc.status==='fechada'?'🔒 Fechada':'🟢 Aberta'}</span></div>
+      </div>
+      <div class="ds"><div class="dst">Valores</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">${pr}</table>
+        <div class="dtot" style="margin-top:10px"><span class="dtot-label">Total</span><span class="dtot-val">R$ ${p.total.toFixed(2)}</span></div>
+      </div>
+      <div class="dsg"><div class="dsl"><div>Assinatura do cliente</div></div><div class="dsl"><div>Moto Service BH</div></div></div>
+      <div class="dft">Moto Service BH · Serviço de Entregas por Motoboy · ${new Date().getFullYear()}</div>`;
+  }
 }
 
-function togSt(i){orders[i].status=orders[i].status==='done'?'pending':'done';sv('mo',orders);renderOrders();updDash();}
-
-function updDash(){
-  document.getElementById('sos').textContent=orders.length;
-  document.getElementById('scli').textContent=clients.length;
-  document.getElementById('srev').textContent='R$ '+orders.reduce((s,o)=>s+o.price.total,0).toFixed(0);
-  document.getElementById('skm').textContent=orders.reduce((s,o)=>s+o.km,0).toFixed(0)+' km';
-  const r=document.getElementById('ros');
-  if(!orders.length){r.innerHTML='<div style="color:var(--mt);font-size:13px">Nenhuma ordem ainda.</div>';return;}
-  r.innerHTML=orders.slice(0,5).map(os=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--bd)"><div><div style="font-weight:500;font-size:14px">#${os.num} · ${os.client.name}</div><div style="font-size:12px;color:var(--mt)">${os.date} · ${os.motoboy}</div></div><div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gn)">R$ ${os.price.total.toFixed(2)}</div></div>`).join('');
+// ===== RELATÓRIO =====
+function gerarRel(){
+  const mes=parseInt(document.getElementById('rel-mes').value);
+  const ano=parseInt(document.getElementById('rel-ano').value);
+  const filtered=orders.filter(o=>{
+    const d=new Date(o.abertura.split(', ')[0].split('/').reverse().join('-'));
+    return d.getMonth()+1===mes&&d.getFullYear()===ano;
+  });
+  const container=document.getElementById('rel-result');
+  const nomeMes=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][mes-1];
+  if(!filtered.length){container.innerHTML=`<div class="card" style="margin-top:16px;text-align:center;color:var(--mt);padding:40px">Nenhuma OS encontrada em ${nomeMes}/${ano}.</div>`;return;}
+  const total=filtered.reduce((s,o)=>s+o.price.total,0);
+  container.innerHTML=`
+    <div class="card" style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">Relatório — ${nomeMes}/${ano}</div>
+          <div style="font-size:12px;color:var(--mt);margin-top:2px">${filtered.length} ordem(ns) · Total: R$ ${total.toFixed(2)}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn bs" onclick="exportCSV(${mes},${ano})">⬇️ Exportar CSV</button>
+          <button class="btn bp" onclick="exportRelPDF(${mes},${ano})">⬇️ Exportar PDF</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rtable" id="rel-table">
+          <thead><tr>
+            <th>Nº OS</th><th>Cliente</th><th>Coleta</th><th>Entrega(s)</th><th>Valor</th><th>Abertura</th><th>Fechamento</th><th>Observação</th>
+          </tr></thead>
+          <tbody>
+            ${filtered.map((o,i)=>`<tr>
+              <td style="white-space:nowrap;font-weight:500;color:var(--ac)">${o.num}</td>
+              <td>${o.client.name}</td>
+              <td style="font-size:12px">${o.pickup.address}</td>
+              <td style="font-size:12px">${o.deliveries.map((d,di)=>`${di+1}. ${d.address}`).join('<br>')}</td>
+              <td style="white-space:nowrap;font-weight:600;color:var(--gn)">R$ ${o.price.total.toFixed(2)}</td>
+              <td style="font-size:12px;white-space:nowrap">${o.abertura}</td>
+              <td style="font-size:12px;white-space:nowrap">${o.fechamento||'—'}</td>
+              <td><textarea rows="1" placeholder="Obs..." onchange="saveObs('${o.id}',this.value)" style="min-width:120px">${o.obs||''}</textarea></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
 }
 
-function showMsg(t,m){const el=document.getElementById(t==='err'?'errmsg':'okmsg');el.textContent=m;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
-calcP();
+function saveObs(id,val){
+  const i=orders.findIndex(o=>String(o.id)===String(id));
+  if(i>=0){orders[i].obs=val;sv('msb_os',orders);}
+}
+
+function exportCSV(mes,ano){
+  const filtered=orders.filter(o=>{const d=new Date(o.abertura.split(', ')[0].split('/').reverse().join('-'));return d.getMonth()+1===mes&&d.getFullYear()===ano;});
+  const rows=[['Nº OS','Cliente','Coleta','Entregas','Valor','Abertura','Fechamento','Observação']];
+  filtered.forEach(o=>rows.push([o.num,o.client.name,o.pickup.address,o.deliveries.map(d=>d.address).join(' | '),'R$ '+o.price.total.toFixed(2),o.abertura,o.fechamento||'',o.obs||'']));
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  const nomeMes=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mes-1];
+  a.download='Relatorio-'+nomeMes+ano+'.csv';a.click();
+}
+
+function exportRelPDF(mes,ano){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4',orientation:'landscape'});
+  const filtered=orders.filter(o=>{const d=new Date(o.abertura.split(', ')[0].split('/').reverse().join('-'));return d.getMonth()+1===mes&&d.getFullYear()===ano;});
+  const nomeMes=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][mes-1];
+  const W=297,margin=14;let y=margin;
+  doc.setFillColor(17,17,17);doc.rect(margin,y,W-margin*2,12,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(245,200,66);
+  doc.text('MOTO SERVICE BH — RELATÓRIO MENSAL',margin+4,y+8);
+  doc.setTextColor(200,200,200);doc.setFontSize(9);
+  doc.text(nomeMes+'/'+ano,W-margin-4,y+8,{align:'right'});
+  y+=18;
+  doc.setTextColor(17,17,17);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  const headers=['Nº OS','Cliente','Coleta','Entrega(s)','Valor','Abertura','Fechamento','Observação'];
+  const colW=[22,35,50,55,18,28,28,31];
+  let x=margin;
+  doc.setFillColor(240,240,240);doc.rect(margin,y-4,W-margin*2,8,'F');
+  headers.forEach((h,i)=>{doc.text(h,x+1,y);x+=colW[i];});
+  y+=6;doc.setFont('helvetica','normal');
+  filtered.forEach(o=>{
+    let x=margin;
+    const vals=[o.num,o.client.name,o.pickup.address.substring(0,30),o.deliveries.map(d=>d.address.substring(0,25)).join('; ').substring(0,50),'R$'+o.price.total.toFixed(2),o.abertura.substring(0,16),o.fechamento?o.fechamento.substring(0,16):'—',o.obs||''];
+    if(y>185){doc.addPage();y=margin;}
+    doc.setDrawColor(220,220,220);doc.line(margin,y+2,W-margin,y+2);
+    vals.forEach((v,i)=>{doc.text(String(v),x+1,y,{maxWidth:colW[i]-2});x+=colW[i];});
+    y+=8;
+  });
+  y+=6;const total=filtered.reduce((s,o)=>s+o.price.total,0);
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(17,17,17);
+  doc.text('Total do período: R$ '+total.toFixed(2)+' ('+filtered.length+' ordens)',margin,y);
+  doc.setFontSize(7);doc.setTextColor(180,180,180);doc.setFont('helvetica','normal');
+  doc.text('Moto Service BH · Gerado em '+new Date().toLocaleString('pt-BR'),W/2,200,{align:'center'});
+  doc.save('Relatorio-'+nomeMes+ano+'.pdf');
+}
+
+function showMsg(id,m){const el=document.getElementById(id);if(!el)return;el.textContent=m;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+calcP('orc');
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4M0rE0Mq1_dA4ibarXJqdTSVq2iVDTPg&callback=initMaps&libraries=places,geometry" async defer></script>
 </body>
